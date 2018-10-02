@@ -1,8 +1,11 @@
 public class Hello {
+	public static int a;
    public static void main(String[] args) {
-      System.out.println("Hello, world!");
-      System.out.println();
-      System.out.println("This program produces four");
-      System.out.println("lines of output.");
+      
+      
+      int b = 0;
+      
+      System.out.print(a);
+      System.out.print(b);
    }
 }
