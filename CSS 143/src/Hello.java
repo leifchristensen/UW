@@ -1,6 +1,6 @@
 public class Hello {
 	public static Integer a;
-   public static void main(String[] args) {
+	public static void main(String[] args) {
       
       //int b;
       int b = 0;
