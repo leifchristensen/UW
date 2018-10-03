@@ -1,5 +1,5 @@
 public class Hello {
-	public static int a;
+	public static Integer a;
    public static void main(String[] args) {
       
       //int b;
