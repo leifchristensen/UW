@@ -1,5 +1,8 @@
 import java.util.Scanner;
 
+// email to bbyrd227@uw.edu by 7:50pm on Oct 5
+
+
 public class LetterGrade {
 
 	public static void main(String[] args) {
