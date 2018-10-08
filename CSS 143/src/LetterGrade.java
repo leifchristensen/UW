@@ -3,8 +3,19 @@ import java.util.Scanner;
 // email to bbyrd227@uw.edu by 7:50pm on Oct 5
 
 
+/**
+ * This program displays student names and grades.
+ * @author Leif Christensen
+ *
+ */
 public class LetterGrade {
 
+	/**
+	 * Main entry to LetterGrade. 
+	 * Continues to prompt for input and display values until user exits program.
+	 * 
+	 * @param args Not Implemented
+	 */
 	public static void main(String[] args) {
 		
 		boolean continueToInput = true;
@@ -23,7 +34,12 @@ public class LetterGrade {
 	
 
 
-	private static Student inputPrompt() {
+	/**
+	 * This method prompts the user for a student's last name, first name, and grade averages. 
+	 * User-input data is used to create a Student object.
+	 * @return Student
+	 */
+	public static Student inputPrompt() {
 		String LastName = new String();
 		String FirstName = new String();
 		double AvgExam = 0.0;
@@ -57,15 +73,29 @@ public class LetterGrade {
 		return student;
 	}
 
+	/** 
+	 * This method takes keyboard Scanner input from the user, confirms that the input is a double, and checks the double for values out of range.
+	 * Doubles must be 0 <= input <= 100.
+	 * @param input Scanner
+	 * @param prompt String containing text to display for invalid inputs.
+	 * @return
+	 */
 	private static double getInputAvg(Scanner input, String prompt) {
 		double value = isDouble(input, prompt);
-		while (value < 0 || value >= 100) {
+		while (value < 0 || value > 100) {
 			System.out.println("Out of range; try again.");
 			value = isDouble(input, prompt);
 		}
 		return value;
 	}
 	
+	/**
+	 * This method takes keyboard Scanner input from the user and confirms that the keyboard entry is a double. 
+	 * If the entry is not a double, it re-prompts the user to enter a double until a double is entered.
+	 * @param input Scanner
+	 * @param prompt String containing text to display for invalid inputs.
+	 * @return double
+	 */
 	private static double isDouble (Scanner input, String prompt) {
 		while (!input.hasNextDouble()) {
 			input.next();
@@ -85,10 +115,14 @@ public class LetterGrade {
 		System.out.println();
 	}
 	
+	/**
+	 * Prompts the user in the console to continue. Y will return true to stay in main loop, N will exit loop, and any other input will re-prompt user.
+	 * @return boolean
+	 */
 	private static boolean promptToContinue() {
 		Scanner input = new Scanner(System.in);
 		while (true) {
-			System.out.println("Do you want to enter another student? /n Press y for yes or n for no");
+			System.out.println("Do you want to enter another student? \n Press y for yes or n for no");
 			
 			String choice = input.next();
 			
@@ -124,7 +158,7 @@ class Student {
 	final double WEIGHT_LAB = 0.15;
 	final double WEIGHT_HW = 0.10;
 	
-	public Student() {
+	Student() {
 		LastName = new String();
 		FirstName = new String();
 		AvgExam = 0.0;
@@ -133,6 +167,11 @@ class Student {
 		AvgHW = 0.0;
 	}
 	
+	/**
+	 * Computes the weighted average of student test scores. Weights are defined in the Student class. 
+	 * Avg grades must be entered before computing final score.
+	 * @return weighted avg as double, stored in this.score.
+	 */
 	double calculateFinalScore() {
 		double total = 	this.AvgExam 	* WEIGHT_EXAM +
 						this.AvgProject * WEIGHT_PROJECT +
@@ -141,6 +180,11 @@ class Student {
 		this.score = total;
 		return this.score;
 	}
+	/**
+	 * This method assigns a char grade for the Student based on the weighted average grade passed to it.
+	 * @param weightedAverage Typically stored in Student.Score.
+	 * @return grade letter as char, stored in this.Grade.
+	 */
 	char calculateFinalGrade(double weightedAverage) {	
 		if (weightedAverage >= 93) {
 			this.Grade = 'A';
@@ -159,12 +203,18 @@ class Student {
 		return this.Grade;
 	}
 	
+	/**
+	 * Displays student data separated by tabs
+	 */
 	void displayStudentGrade() {
+		System.out.println();
 		System.out.println(
-				"Last Name /t/t First Name /t/t Final Score /t/t Letter Grade"
+				"Last Name \t First Name \t Final Score \t Letter Grade"
 				);
-		System.out.println(
-				this.LastName + "/t/t" + this.FirstName + "/t/t" + this.score + "/t/t" + this.Grade
+		System.out.printf("%s \t\t %s \t\t %.2f \t\t %c",
+				this.LastName, this.FirstName, this.score, this.Grade
 				);
+		System.out.println();
+		System.out.println();
 	}
 }
