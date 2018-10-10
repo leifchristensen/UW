@@ -74,10 +74,11 @@ public class NumberGuess3 {
 	 */
 	public static int getGuess(Scanner console) {
 		int guess = getInt(console, "Your guess? ");
-		while (guess < 0 || guess >= 100) {
-			System.out.println("Out of range; try again.");
+		
+		do {
+			System.out.println("Guess a whole number between 0 and 100.");
 			guess = getInt(console, "Your guess? ");
-		}
+		}while (guess < 0 || guess >= 100);
 		return guess;
 	}
 

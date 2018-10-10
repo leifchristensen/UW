@@ -1,0 +1,24 @@
+23
+John
+Smith
+42.0
+"Hello
+world"
+$2.50
+"
+19"
+There are 9 tokens in the input!
+The current token is an int: 23
+The current token is a String: John
+The current token is a String: Smith
+The current token is a double: 42.0
+The current token is a String: "Hello
+The current token is a String: world"
+The current token is a String: $2.50
+The current token is a String: "
+The current token is a String: 19"
+
+Token counts are as follows:
+	Doubles =     1
+	Integers =    1
+	Strings =     7
