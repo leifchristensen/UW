@@ -38,6 +38,9 @@ public class ZipLookup {
         String targetCoordinates = find(target, input);
         Scanner file = new  Scanner(new File("zipcode.txt"));
         showMatches(targetCoordinates, file, miles);
+        console.close();
+        input.close();
+        file.close();
     }
 
     
