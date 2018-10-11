@@ -10,7 +10,7 @@ public class ArrayListTest {
       
    }
    public static ArrayList<Integer> minToFront(ArrayList<Integer> list) {
-       ArrayList returnList = new ArrayList();
+       ArrayList<Integer> returnList = new ArrayList<Integer>();
        int minIndex = 0;
        int minVal = (int) list.get(0);
        for (int i = 0; i < list.size(); i++)
