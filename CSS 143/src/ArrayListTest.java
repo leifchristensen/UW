@@ -8,6 +8,7 @@ public class ArrayListTest {
       list.add(2);
       System.out.print(minToFront(list));
       
+      
    }
    public static ArrayList<Integer> minToFront(ArrayList<Integer> list) {
        ArrayList<Integer> returnList = new ArrayList<Integer>();
@@ -19,6 +20,7 @@ public class ArrayListTest {
          {
             minVal = (int) list.get(i);
             minIndex = i;
+            
          }
        }
        returnList.add(list.get(minIndex));
