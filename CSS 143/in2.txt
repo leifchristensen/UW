@@ -1,2 +1,0 @@
-23 John Smith 42.0 "Hello world" $2.50 " 19"
-3 Suzy "Hello 143" $1.50 19.2
