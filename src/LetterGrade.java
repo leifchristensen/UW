@@ -1,3 +1,4 @@
+package src;
 import java.util.Scanner;
 
 // email to bbyrd227@uw.edu by 7:50pm on Oct 5

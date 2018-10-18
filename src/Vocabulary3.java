@@ -1,3 +1,4 @@
+package src;
 // This program reads two text files and compares the vocabulary used in each.
 
 import java.util.*;

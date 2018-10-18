@@ -1,3 +1,4 @@
+package src;
 // A robust two-digit number-guessing game with hinting.
 
 import java.util.*;
