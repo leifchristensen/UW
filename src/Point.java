@@ -4,6 +4,11 @@ package src;
 public class Point {
     private int x;
     private int y;
+    
+ // Constructs a new point with the (0,0) location.
+    public Point() {
+        setLocation(0,0);
+    }
 
     // Constructs a new point with the given (x, y) location.
     public Point(int initialX, int initialY) {
@@ -32,12 +37,16 @@ public class Point {
     }
 
     // Returns a String representation of this point.
-    /*public String toString() {
+    public String toString() {
         return "(" + x + ", " + y + ")";
-    }*/
+    }
 
     // Shifts this point's location by the given amount.
     public void translate(int dx, int dy) {
         setLocation(x + dx, y + dy);
+    }
+    
+    public void flip() {
+    	
     }
 }
