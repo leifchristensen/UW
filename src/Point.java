@@ -14,6 +14,11 @@ public class Point {
     public Point(int initialX, int initialY) {
         setLocation(initialX, initialY);
     }
+    
+    // Constructs a new Point from another Point object
+    public Point(Point other) {
+    	this(other.x,other.y);
+    }
 
     // Returns the distance between this point and (0, 0).
     public double distanceFromOrigin() {
