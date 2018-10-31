@@ -85,11 +85,28 @@ public class CaveExplorer {
 		this.locY = y;
 	}
 	
+	/**
+	 * Returns a byte array stream of the cave system for use in multiple output formats.
+	 * Format is tab separated between values in a row, and carriage return character between rows.
+	 * 
+	 * -1 represents the current location of the explorer.
+	 * 0 represents positions where the explorer has traveled.
+	 * >0 represents the amount of work needed for the explorer to enter a location.
+	 * 
+	 * IN: {{1	1	2	3	1}     {2	1	3	3	1}}
+	 * OUT: {1	1	2	3	1	\r	2	1	3	3	1 \r}
+	 * 
+	 * @param out
+	 * @throws IOException
+	 */
 	public void draw(OutputStream out) throws IOException {
-		byte[] tempArr = new byte[this.cave.length*(this.cave[0].length+1)];
+		
+		
+		byte[] tempArr = new byte[this.cave.length*((this.cave[0].length*2)+1)];
 		for(int i = 0; i < this.cave.length; i++) {
 			for(int j = 0; j < this.cave[0].length; i++) {
 				tempArr[i] = (byte) this.cave[i][j];
+				tempArr[++i] = '\t';
 			}
 			// Adds carriage return byte at the end of each row. 
 			tempArr[i++] = '\r';
