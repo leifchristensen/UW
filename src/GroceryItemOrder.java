@@ -1,8 +1,9 @@
+package src;
+
 /**
  * @author TCSS143
  * @version Lab 5
  */
-
 public class GroceryItemOrder {
     /** Name of the grocery item */
     private String name;
