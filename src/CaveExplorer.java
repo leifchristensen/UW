@@ -33,8 +33,9 @@ public class CaveExplorer {
 	 * @param x Cave width
 	 * @param y Cave height
 	 * @param bound Maximum effort value
+	 * @throws InvalidAttributeValueException 
 	 */
-	public CaveExplorer(int x, int y, int bound){
+	public CaveExplorer(int x, int y, int bound) throws InvalidAttributeValueException{
 		// Ensures that x, y, and bound are all > 0
 		if(x < 0 || y < 0 || bound < 0) {
 			throw new NegativeArraySizeException("CaveExplorer array can not have negative dimensions");
@@ -53,8 +54,9 @@ public class CaveExplorer {
 	/**
 	 * Deep copy constructor
 	 * @param other CaveExplorer
+	 * @throws InvalidAttributeValueException 
 	 */
-	public CaveExplorer(CaveExplorer other) {
+	public CaveExplorer(CaveExplorer other) throws InvalidAttributeValueException {
 		this.cave = new int[other.cave.length][other.cave[0].length];
 		for(int i = 0; i < this.cave.length; i++) {
 			for(int j = 0; j < this.cave[0].length; j++) {
