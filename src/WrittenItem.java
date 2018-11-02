@@ -37,18 +37,14 @@ public class WrittenItem extends AbstractItem {
      */
     public WrittenItem(String aCatalogID, String aTitle, int aYearPublished,
                        String[] authors, int anEdition, String anISBN) {
-    	setMyCatalogID(aCatalogID);
-    	setMyTitle(aTitle);
-    	setMyYearPublished(aYearPublished);
+    	super(aCatalogID, aTitle, aYearPublished, authors);
     	myEdition = anEdition;
     	myISBN = anISBN;
         if (myEdition < 1) {
             myEdition = 1;
         }
-        if (getMyYearPublished() > aYearPublished) {
-            setMyYearPublished(aYearPublished);
-        }
-        setMyAuthors(Arrays.copyOf(authors, authors.length));
+        
+        
     }
 
     /**

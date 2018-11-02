@@ -41,10 +41,8 @@ public class MediaItem extends AbstractItem {
      */
     public MediaItem(String aCatalogID, String aTitle, int aYearPublished,
                      String[] authors, double aRuntime, int aTracksNumber, String aUPC)  {
+    	super(aCatalogID, aTitle, aYearPublished, authors);
     	
-    	setMyCatalogID(aCatalogID);
-    	setMyTitle(aTitle);
-    	setMyYearPublished(aYearPublished);
         myRuntime = aRuntime;
         myTracksNumber = aTracksNumber;
         myUPC = aUPC;
@@ -53,10 +51,6 @@ public class MediaItem extends AbstractItem {
         if (myTracksNumber < 1) {
             myTracksNumber = 1;
         }
-        if (getMyYearPublished() > aYearPublished) {
-            setMyYearPublished(aYearPublished);
-        }
-        setMyAuthors(Arrays.copyOf(authors, authors.length));
         		
     }
     

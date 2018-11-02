@@ -8,6 +8,17 @@ public abstract class AbstractItem {
 	private String myTitle;
 	private int myYearPublished;
 	
+	public AbstractItem(String aCatalogID, String aTitle, int aYearPublished,
+                     String[] authors) {
+		setMyCatalogID(aCatalogID);
+    	setMyTitle(aTitle);
+    	setMyYearPublished(aYearPublished);
+    	setMyAuthors(Arrays.copyOf(authors, authors.length));
+    	if (getMyYearPublished() > aYearPublished) {
+            setMyYearPublished(aYearPublished);
+        }
+	}
+	
 	public String getMyCatalogID() {
 		return this.myCatalogID;
 	}
