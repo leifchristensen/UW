@@ -2,6 +2,7 @@ package src;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 import javax.management.InvalidAttributeValueException;
 
@@ -97,11 +98,12 @@ public class CaveExplorer {
 	 * 
 	 * IN: {{1	1	2	3	1}     {2	1	3	3	1}}
 	 * OUT: {1	1	2	3	1	\r	2	1	3	3	1 \r}
+	 * @param out2 
 	 * 
 	 * @param out
 	 * @throws IOException
 	 */
-	public void draw(OutputStream out) throws IOException {
+	public void draw(PrintStream out2) throws IOException {
 		
 		
 		byte[] tempArr = new byte[this.cave.length*((this.cave[0].length*2)+1)];
