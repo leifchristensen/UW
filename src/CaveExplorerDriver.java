@@ -2,13 +2,16 @@ package src;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
+
+import javax.management.InvalidAttributeValueException;
 
 
 
 public class CaveExplorerDriver {
 
-   public static void main(String[] args) throws FileNotFoundException {
+   public static void main(String[] args) throws IOException, InvalidAttributeValueException {
    
       PrintStream out1 = new PrintStream(new File("cave_system.txt"));
       PrintStream out2 = System.out;
@@ -51,9 +54,9 @@ public class CaveExplorerDriver {
       myt1.draw(out2);
       myt1.draw(out1);
       
-      System.out.println("my path: " + myt1.getPath());
-      System.out.println(myt1.numOfMoves());
-      System.out.println(myt1.effort());
+      System.out.println("my path: \r\n" + myt1.getPath());
+      System.out.println("Total Moves: " + myt1.numOfMoves());
+      System.out.println("Total Effort: " + myt1.effort());
             
       System.out.println("********************");
       out1.println("********************");
@@ -66,9 +69,9 @@ public class CaveExplorerDriver {
       myt2.draw(out2);
       myt2.draw(out1);
       
-      System.out.println("my path: " + myt2.getPath());
-      System.out.println(myt2.numOfMoves());
-      System.out.println(myt2.effort());
+      System.out.println("my path: \r\n" + myt2.getPath());
+      System.out.println("Total Moves: " + myt2.numOfMoves());
+      System.out.println("Total Effort: " + myt2.effort());
 
    }   
 }
