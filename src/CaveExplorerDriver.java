@@ -11,7 +11,7 @@ import javax.management.InvalidAttributeValueException;
 
 public class CaveExplorerDriver {
 
-   public static void main(String[] args) throws IOException, InvalidAttributeValueException {
+   public static void main(String[] args) throws IOException, InvalidAttributeValueException, FileNotFoundException {
    
       PrintStream out1 = new PrintStream(new File("cave_system.txt"));
       PrintStream out2 = System.out;
