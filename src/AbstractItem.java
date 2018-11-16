@@ -2,7 +2,7 @@ package src;
 
 import java.util.Arrays;
 
-public abstract class AbstractItem {
+public abstract class AbstractItem implements Comparable<AbstractItem>{
 	private String myCatalogID;
 	private String[] myAuthors;
 	private String myTitle;
@@ -18,6 +18,16 @@ public abstract class AbstractItem {
             setMyYearPublished(aYearPublished);
         }
 	}
+	
+	public abstract int compareTo(AbstractItem other);
+	
+	/*
+	public int compareTo(AbstractItem other) {	
+		if (this.getClass() != other.getClass())
+				throw new IllegalArgumentException();
+    				
+		return this.getMyCatalogID().compareTo(other.getMyCatalogID());
+	}*/
 	
 	public String getMyCatalogID() {
 		return this.myCatalogID;

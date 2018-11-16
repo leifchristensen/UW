@@ -47,6 +47,18 @@ public class WrittenItem extends AbstractItem {
         
         
     }
+    
+    
+    public int compareTo(AbstractItem other) {
+    	if (this.getClass() != (other).getClass())
+    		throw new IllegalArgumentException("Class Mismatch");
+    	if(!Arrays.deepEquals(this.getMyAuthors(),((WrittenItem) other).getMyAuthors())) {
+			return this.getMyAuthors().hashCode()-((WrittenItem) other).getMyAuthors().hashCode();
+		}
+    	
+    	
+		return 0;
+    }
 
     /**
      * Returns edition number.

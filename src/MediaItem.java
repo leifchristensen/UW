@@ -54,6 +54,26 @@ public class MediaItem extends AbstractItem {
         		
     }
     
+    
+    public int compareTo(AbstractItem other) {
+    	if (this.getClass() != other.getClass())
+    		throw new IllegalArgumentException();    	
+    	
+    	if(this.getMyTitle().compareTo(((MediaItem) other).getMyTitle())!=0) {
+			return this.getMyTitle().compareTo(((MediaItem) other).getMyTitle());
+		}
+    	
+    	if(this.getMyTracksNumber() != ((MediaItem) other).getMyTracksNumber()) {
+			return this.getMyTracksNumber() - ((MediaItem) other).getMyTracksNumber();
+		}
+    	
+    	if(this.getMyYearPublished() != ((MediaItem) other).getMyYearPublished()) {
+			return this.getMyYearPublished() - ((MediaItem) other).getMyYearPublished();
+		}
+    	
+		return 0;
+    }//*/
+    
   
     /**
      * Returns runnning time of an item.
