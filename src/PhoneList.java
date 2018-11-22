@@ -69,13 +69,11 @@ public class PhoneList {
 		File input = new File(filename);
 		if(!input.canRead())
 			throw new FileNotFoundException();
-		Scanner inputReader = new Scanner(input);		
+		Scanner inputReader = new Scanner(input);	
+		inputReader.nextLine();
 		while(inputReader.hasNextLine()) {
 			Scanner lineReader = new Scanner(inputReader.nextLine());
-			// Consume line if first column is not int
-			if(!lineReader.hasNextInt())
-				break;
-			
+			lineReader.useDelimiter(",");
 			int inArea = 0;
 			String inNum = "";
 			int outArea = 0;
