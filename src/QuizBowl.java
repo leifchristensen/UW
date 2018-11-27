@@ -5,7 +5,7 @@ import java.io.*;
 
 /**
  * Class QuizBowl that uses a file to play the quiz
- * @author Raghavi Sakpal, Monika Sobolewska
+ * @author Raghavi Sakpal, Monika Sobolewska, additions by Leif Christensen
  * @version Autumn 2018
  */
 
@@ -25,15 +25,48 @@ public class QuizBowl   {
 		ArrayList<AbstractQuestion> questionBank = fillQuestionBank(filename);  // ArrayList of questions to be read from file
 
 		//System.out.print(questionBank); // verify the read
+		
+		// Sets maximum number of questions
+		numQues = questionBank.size();
+		
+		// Read first and last name of player
+		String firstName = "";
+		String lastName = "";
+		
+		System.out.println("What is your first name?");
+		firstName = console.nextLine();
+		System.out.println("What is your last name?");
+		lastName = console.nextLine();
+		
+		Player player = new Player(firstName, lastName);
 
-		System.out.println("How many questions would you like?");
+		System.out.println("How many questions would you like? (out of " + numQues + ")");
 
 		// Accept number of questions player wants to play 
 		playNumQues = console.nextInt();
 		console.nextLine();       // Discard the rest of the line
 
 		// Method Call: Play the quiz
-		playQuizBowl(console,questionBank,playNumQues);
+		playQuizBowl(console,questionBank,playNumQues, player);
+		
+		// Calculate total score percent
+		int totalPossible = 0;
+		for( int i = 0; i < playNumQues; i++) {  // Gets total possible points for each question in question bank up to the number of questions selected.
+			totalPossible += questionBank.get(i).getNumPoints();
+		}
+		double scorePercent = (double) player.getPoints() / totalPossible;
+		
+		// Print results
+		System.out.println(player.getFirstName() + " " + player.getLastName() + ", your game is over!");
+		System.out.println("Your final score is " + player.getPoints() + " points.");
+		if(scorePercent < 0) 
+			System.out.println("Hmmm, are you sure you want to be on the team?");
+		else if(scorePercent < 0.60) 
+			System.out.println("Not bad, but you need to study more.");
+		else if(scorePercent >= 0.90) 
+			System.out.println("Way to go! You are a true QuizBowler!");
+		else
+			System.out.println("Good Progress");
 	}
 
 
@@ -89,7 +122,7 @@ public class QuizBowl   {
 	 * @param qBank contains all the questions
 	 * @param playNumQues is the number of questions to ask > 0
 	 */
-	public static void playQuizBowl(Scanner input, ArrayList<AbstractQuestion> qBank, int playNumQues)   {
+	public static void playQuizBowl(Scanner input, ArrayList<AbstractQuestion> qBank, int playNumQues, Player player)   {
 		int quesNo;                                                 // Variable for question number
 
 		// Loop till player number of questions
@@ -100,11 +133,16 @@ public class QuizBowl   {
 			System.out.println(q.getQuestion());
 			String playerAns = input.nextLine();
 
+			if(playerAns.equals("SKIP")) { // Skips question without modifying points or checking for correct answer.
+				System.out.println("You have elected to skip that question.");
+			}
 			if(q.isCorrect(playerAns)) {   // Check if the user answer is correct
 				System.out.println("Correct! You get " + q.getNumPoints() + " points.");
+				player.incrementPoints(q.getNumPoints()); // Increments total points of player
 			}
 			else {      // if the user answer is incorrect
 				System.out.println("Incorrect! You lose " + q.getNumPoints() + " points.");
+				player.incrementPoints(q.getNumPoints() * -1); // Decrements total points of player
 			}
 
 			System.out.println();

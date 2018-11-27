@@ -31,7 +31,7 @@ public class Player {
 		return lastName;
 	}
 	/**
-	 * @param The last name to set
+	 * @param lastName The last name to set
 	 */
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
@@ -50,10 +50,11 @@ public class Player {
 	}
 	
 	/**
-	 * Increments the number of points by 1.
+	 * Increments the player's total number of points. Negative values decrement total
+	 * @param numPoints number of points to increment/decrement total by.
 	 */
-	public void incrementPoints() {
-		this.points++;
+	public void incrementPoints(int numPoints) {
+		this.points += numPoints;
 	}
 	
 	

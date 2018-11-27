@@ -14,14 +14,11 @@ public abstract class AbstractQuestion implements QuestionInterface {
 	
 	
 	@Override
-	public boolean isCorrect(String toCompare) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public abstract boolean isCorrect(String toCompare);
 
 
 	/**
-	 * @return the question
+	 * @return the question text
 	 */
 	public String getQuestion() {
 		return question;
@@ -29,7 +26,7 @@ public abstract class AbstractQuestion implements QuestionInterface {
 
 
 	/**
-	 * @param question the question to set
+	 * @param question the question text to set
 	 */
 	public void setQuestion(String question) {
 		this.question = question;
@@ -53,7 +50,7 @@ public abstract class AbstractQuestion implements QuestionInterface {
 
 
 	/**
-	 * @return the numPoints
+	 * @return the number of points the question is worth
 	 */
 	public int getNumPoints() {
 		return numPoints;
@@ -61,12 +58,13 @@ public abstract class AbstractQuestion implements QuestionInterface {
 
 
 	/**
-	 * @param numPoints the numPoints to set
+	 * @param numPoints the number of points to set the value of the question to
 	 */
 	public void setNumPoints(int numPoints) {
 		this.numPoints = numPoints;
 	}
 	
+	@Override
 	public String toString() {
 		return question + "\t" + answer + "\t" + numPoints;
 		
