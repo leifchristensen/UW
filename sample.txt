@@ -1,0 +1,74 @@
+10
+MA 10
+What are the most popular programming languages? Check all that apply
+5
+A) Cobol
+B) C++
+C) Java
+D) Pascal
+E) Python
+BCE
+SA 5
+There exist birds that can not fly. (true/false)
+true
+MC 10
+Who was the president of the USA in 1991?
+6
+A) Richard Nixon
+B) Gerald Ford
+C) Jimmy Carter
+D) Ronald Reagan
+E) George Bush Sr.
+F) Bill Clinton
+E
+SA 20
+What city hosted the 2004 Summer Olympics?
+Athens
+MC 10
+Who wrote the Hobbit novels?
+4
+A) George R.R. Martin
+B) J.R.R Tolkien
+C) Leo Tolstoy
+D) George Orwell
+B
+MC 10
+Who voiced the Genie in Disney's Aladdin (1992)?
+4
+A) Will Smith
+B) Tom Hanks
+C) Robin Williams
+D) Will Ferrell
+C
+SA 20
+In what year was American President Abraham Lincoln assassinated?
+1865
+SA 5
+In January Earth is closest to the Sun. (true/false)
+true
+MD 20
+To create an abstract data type in Java the keywords ____________ and __________ should be used.
+10
+Option 1:
+A) class
+B) static
+C) int
+D) List
+Option 2:
+A) public
+B) main
+C) void
+D) String
+AA
+Match 10
+Match countries with their capitals:
+8
+1) Italy
+2) Germany
+3) China
+4) India
+A) Berlin
+B) Rome
+C) New Delhi
+D) Beijing
+1B2A3D4C
