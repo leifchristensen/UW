@@ -4,11 +4,20 @@ import java.util.ArrayList;
 
 public class QMatching extends QMultipleChoice {
 
+	/** Creates a new Matching question
+	 * @param question
+	 * @param numPoints
+	 * @param answer
+	 * @param choices
+	 */
 	public QMatching(String question, int numPoints, String answer,  ArrayList<String> choices) {
 		super(question, numPoints, answer, choices);
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see src.QMultipleChoice#isCorrect(java.lang.String)
+	 */
 	@Override
 	public boolean isCorrect(String toCompare) {
 		int numCorrect = 0;

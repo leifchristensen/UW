@@ -6,17 +6,18 @@ public abstract class AbstractQuestion implements QuestionInterface {
 	private String answer;
 	private int numPoints;
 	
-	public AbstractQuestion(String question, int numPoints, String answer) {
+	/** Creates a new AbstractQuestion, for use in child classes
+	 * @param question
+	 * @param numPoints
+	 * @param answer
+	 */
+	protected AbstractQuestion(String question, int numPoints, String answer) { // Protected for use by child classes in package, not for direct calls by client
 		setQuestion(question);
 		setAnswer(answer);
 		setNumPoints(numPoints);
 	}
 	
 	
-	@Override
-	public abstract boolean isCorrect(String toCompare);
-
-
 	/**
 	 * @return the question text
 	 */
@@ -64,6 +65,15 @@ public abstract class AbstractQuestion implements QuestionInterface {
 		this.numPoints = numPoints;
 	}
 	
+	/* (non-Javadoc)
+	 * @see src.QuestionInterface#isCorrect(java.lang.String)
+	 */
+	@Override
+	public abstract boolean isCorrect(String toCompare);
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return question + "\t" + answer + "\t" + numPoints;
