@@ -7,26 +7,53 @@ import com.sun.xml.internal.fastinfoset.util.CharArray;
 public class Distance1Map {
 	
 	Map<String, Set<String>> map;
+	
+	public LengthMap lengthMap;
 
 	public Distance1Map() {
-		// TODO Auto-generated constructor stub
+		this.lengthMap = new LengthMap();
 	}
+	
+	
 	
 	/**
 	 * Returns a map of all Strings which differ by length 1.
 	 * The keys of the map are all words of the given length, and the set associated with each key is the set of words that differ by one letter.
 	 * @return
 	 */
-	public void map(Set<String> input) {
+	private void map(int length) {
 		Map<String, Set<String>> map = new TreeMap<String, Set<String>>();
 		
-		for (String string : input) {
+		if(lengthMap.get(length).isEmpty()) {
+			throw new NullPointerException("Map is empty");
+		}
+		
+		//Adds each string in the lengthmap set as a key, 
+		//	and adds the set of strings that differ by 1 from the key as values to each key.
+		for (String string : this.lengthMap.get(length)) {
 			Set<String> dataset = new HashSet<String>();
-			//TODO: create method to fill dataset
+			//TODO: Fill out dataset
+			dataset = this.get1Diff(string);
+			
 			map.put(string, dataset);
 		}
 		
 		this.map = map;
+	}
+	
+	/**
+	 * Gets the set of strings in the LengthMap that are 1 different that a given string.
+	 * @param s
+	 * @return
+	 */
+	private Set<String> get1Diff(String s){
+		Set<String> dataset = new HashSet<String>();
+		for(String other : this.lengthMap.get(s.length())) {
+			if(this.differBy1(s, other)) {
+				dataset.add(s);
+			}
+		}
+		return dataset;
 	}
 	
 	
@@ -62,7 +89,12 @@ public class Distance1Map {
 		}
 	}
 	
-	private Queue<Stack<String>> enqueueStrings(){
+	private Queue<Stack<String>> enqueueString(String input){
+		
+		Queue<Stack<String>> queue = new LinkedList<Stack<String>>();
+		
+		Set<String> mappedWords = 
+		
 		return null;
 		
 	}

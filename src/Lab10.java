@@ -1,128 +1,54 @@
 package src;
 
-import java.util.*;
 
-public class Lab10 {
 
-	public Lab10() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public void shift(Stack<Integer> input, int n) {
-		Queue<Integer> queue = new LinkedList<Integer>();
-		int numElements = input.size();
-		
-		for(int i = 0; i < numElements; i++ ) {
-			Integer j = input.pop();
-			if(i > numElements-  n)
-				queue.add(j);
-			else {
-				
-				input.add(j);
-			}
-		}
-		
-		while(!queue.isEmpty()) {
-			
-			input.add(queue.remove());
-	}
-		
-		
-		
-		
-		
-				
-	}
+public class Lab10{
+	public static int counter;
 	
-	public void mirror(Stack<Integer> input) throws IllegalAccessException {
-		Stack<Integer> temp = new Stack<Integer>();
-		int size = input.size();
+	public static void main(String[] args) {
+		/*counter = 0;
+		System.out.println(geom(3));
 		
-		
-		
-		for(int i = 0; i < size; i++) {
-			Integer j = input.pop()
-			temp.push(j);
-			input.push(j);
-		}
-		
-		for(int i = 0; i < size; i++) {
-			temp.push(temp.pop());
-		}
-	}
-	
-	public HashMap<String, Integer> reverse(Map<Integer, String> input) {
-		HashMap<String, Integer> map = new HashMap<String, Integer>();
-		
-		
-		for(Integer i : input.keySet()) {
-			String s = input.get(i);
-			if(!map.keySet().contains(s)) {
-				map.put(s, i);
-			}
-		}
-		
-		return map;
+		counter = 0;
+		System.out.println(sqrt(50,8,0.1));
+		*/
+		System.out.print(interest(5,1000.00,0.12));
 		
 	}
 	
-	public int maxOccurrences(List<Integer> input) {
-		int mode = 0;
-		
-		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
-		
-		for(Integer i : input) {
-			if (map.containsKey(i)) {
-				map.put(i, Integer.sum(map.get(i), 1));
-			}
-			else {
-				map.put(i, 1);
-			}
+	public static int geom(int levels) {
+		counter++;
+		if(levels == 0) {
+			System.out.println("Val: " + 1 +" Base: 1"+ " Counter: " + counter);
+			return 1;
+		}
+		else {
+			int i = (4 * geom(levels-1));
+			System.out.println("Val: " + i + " Recurse Level: " + levels + " Counter: " + counter);
+			return i;
 		}
 		
-		for(Integer i : map.keySet()) {
-			if(map.get(i) > mode) {
-				mode = map.get(i);
-			}
-		}
 		
-		return mode;
+	}
+
+
+	public static double sqrt(double n, double approx, double tol) {
+		counter++;
+		System.out.println("Base: "+ n + " Tolerance: " + tol + " Counter: " + counter + " Approx: " + approx);
+		
+		if(Math.abs(Math.pow(approx, 2)-n ) <= tol) {
+			return approx;
+		} 
+		else {		
+			return sqrt(n,Math.abs((Math.pow(approx, 2)+n)/(2 * approx)),tol);
+		}
 	}
 	
-	public boolean isUnique(Map<String, String> map) {
-		for(String s1 : map.keySet()) {
-			for(String s2 : map.keyset()) {
-				if(map.get(s1).equals(map.get(s2)) && !(s1.equals(s2))) {
-					return false
-				}
-			}
+	public static double interest(int years, double amount, double rate) {
+		if(years == 0) {
+			return amount;
 		}
-		return true;
-	}
-
-
-public boolean isPalindrome(Queue<Integer> input) {
-	    Queue<Integer> queue = new LinkedList<Integer>();
-	    Stack<Integer> stack = new Stack<Integer>();
-	    int numletters = 0;
-	    
-	    while(!input.isEmpty()) {
-	    	Integer i = input.remove();
-	    	queue.add(i);
-	    	stack.add(i);    	
-	    	numletters++;
-	    }
-	    
-	    while(!queue.isEmpty()) {
-	    	Integer int1 = queue.remove();
-	    	Integer int2 = stack.pop();
-	    	input.add(int1);
-	    	if(!int1.equals(int2))
-	    		return false;
-	    }
-	    
-	    return true;
-	    
-	    
+		
+		return interest(years - 1, amount * (1+rate), rate);
 	}
 }
