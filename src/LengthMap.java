@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.sun.media.sound.InvalidDataException;
 
@@ -20,7 +21,7 @@ public class LengthMap {
 	private TreeMap<Integer, Set<String>> map;
 	
 	public LengthMap() {
-		this.map = new TreeMap<>();
+		this.map = new TreeMap<Integer, Set<String>>();
 	}
 
 	/**
@@ -36,7 +37,7 @@ public class LengthMap {
 	 * @return Set of strings
 	 */
 	public Set<String> get(int length) {
-		Set<String> returnVals = new LinkedHashSet<String>(this.getMap().get(length));
+		Set<String> returnVals = new TreeSet<String>(this.getMap().get(length));
 		return returnVals;
 	}
 	
@@ -46,16 +47,17 @@ public class LengthMap {
 	 * @param s String to attempt to add
 	 * @throws InvalidDataException If string is already in data set or otherwise fails to add.
 	 */
-	private void addString(String s) throws InvalidDataException {
+	private void addString(String s) {
 		Integer length = 0;
 		length = s.length();
-		if(this.getMap().containsKey(length)) { //If key exists, check for match. Add s to set if no match.
-			if(!this.map
-					.get(length)
-					.add(s)) {
-				throw new InvalidDataException(s);
-			}
+		Set<String> tempset = new TreeSet<String>();
+		
+		tempset.add(s.toLowerCase());
+		
+		if(!this.map.isEmpty() && this.map.containsKey(length) && !this.map.get(length).isEmpty()) {
+			tempset.addAll(this.map.get(length));
 		}
+		this.map.put(length, tempset);
 	}
 	
 	
@@ -71,11 +73,7 @@ public class LengthMap {
 		while(input.hasNext()) {			
 			
 			String s = input.next();
-			try {
-				addString(s);				
-			} catch (Exception e) { // Data Exception
-				errors.add(s);
-			}
+			this.addString(s);
 					
 		}
 		
