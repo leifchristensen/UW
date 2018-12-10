@@ -50,7 +50,7 @@ public class Distance1Map {
 		Set<String> dataset = new HashSet<String>();
 		for(String other : this.lengthMap.get(s.length())) {
 			if(this.differBy1(s, other)) {
-				dataset.add(s);
+				dataset.add(other);
 			}
 		}
 		return dataset;
@@ -69,7 +69,11 @@ public class Distance1Map {
 	
 	
 	/**
-	 * REturns a queue of stacked strings. Each stack contains two elements, a top element with a word differing from the input by 1, and the bottom element containing the original input.
+	 * Returns a set of stacked strings. 
+	 * Each stack contains two elements, a top element with a word 
+	 * 	differing from the input by 1, 
+	 * 	and the bottom element containing the original input.
+	 * Top elements of each stack are the set of all words differing by 1 from the input, including the input.
 	 * @param input
 	 * @return
 	 */
@@ -91,12 +95,12 @@ public class Distance1Map {
 	}
 	
 	/**
-	 * Tests if two strings differ by a 
+	 * Tests if two strings differ by 0 or 1 characters
 	 * @param s1
 	 * @param s2
 	 * @return
 	 */
-	private boolean differBy1(String s1, String s2) {
+	public boolean differBy1(String s1, String s2) {
 		if(s1.length() != s2.length()) // If strings are different sizes, return false
 			return false;
 		
@@ -108,19 +112,19 @@ public class Distance1Map {
 		
 		int differing = 0;
 		
-		for(int i = 0; i < c1.length && i < c2.length; i++) {
+		for(int i = 0; i < s1.length() && i < s2.length(); i++) {
 			if(c1[i] != c2[i])
 				differing ++;
 		}
 		
-		if(differing < 1) // False if more than one different char.
+		if(differing > 1) // False if more than one different char.
 			return false;
 		
 		return true;
 	}
 	
 	/**
-	 * Computes the distance between two words. 
+	 * Computes the shortest distance between two words. 
 	 * Distance is calculated by the number of 1-letter changes from one word to another to transform one word into another.
 	 * s1 and s2 can be in any order for the two parameters and the return value will be identical.
 	 * -1 is returned if s1 cannot be transformed to s2.
@@ -131,24 +135,39 @@ public class Distance1Map {
 	public int distance(String s1, String s2) {
 		int returnVal = -1;
 		
-		int counter = 0;
+		// Case of identical strings
+		if(s1.toLowerCase().equals(s2.toLowerCase())){
+			return 0;
+		} else 
+		// Case of different lengths
+			if(s1.length() != s2.length()) {
+				return -1;
+		}
+		
+		
 		
 		try {
-			Stack<Queue<Stack<String>>> outerStack = this.getPathHelper(s1, s2);
+			Stack<String> matchingStack = this.getPathHelper(s1, s2);
 			
-
-			while(!outerStack.isEmpty()) {
-				outerStack.pop();
-				counter++;
+			
+			
+			// If no path, return stack will be size 1. 
+			// Because identical strings are handled above, this means no path is possible. 
+			if(matchingStack.size() == 1) {
+				return -1;
 			}
 			
-			returnVal = counter;
+			// If the matching stack is greater than 1 element, returns the length of the stack.
+			returnVal = matchingStack.size();		
+			
+			
 		}
 		
 		catch (Exception e) {
 			System.out.print(e);
-			return returnVal;
+			return -1;
 		}
+				
 		
 		return returnVal;
 		
@@ -162,20 +181,40 @@ public class Distance1Map {
 	 */
 	public String getPath(String s1, String s2) {
 		
-		String returnVal = s1.toLowerCase();
+		// Case of identical strings
+		if(s1.toLowerCase().equals(s2.toLowerCase())){
+			return s1 + " -> " + s2;
+		} else 
+		// Case of different lengths
+			if(s1.length() != s2.length()) {
+				return "Different length strings";
+		}
+		
+		String returnVal = "";
 		
 		try {
-			Stack<Queue<Stack<String>>> outerStack = this.getPathHelper(s1, s2);
+			Stack<String> matchingStack = this.getPathHelper(s1, s2);
 			
-
-			while(!outerStack.isEmpty()) {
-				Queue<Stack<String>> innerQueue = new LinkedList<Stack<String>>(outerStack.pop());
-				
-				while(!innerQueue.isEmpty()) {
-					
-				}
-				
-				returnVal.concat(" -> " + innerQueue.remove().get(0));
+			
+			
+			// If no path, return stack will be size 1. 
+			// Because identical strings are handled above, this means no path is possible. 
+			if(matchingStack.size() == 1) {
+				return "No path possible";
+			}
+			
+			
+			
+			// reverses stack
+			Stack<String> reverseStack = new Stack<String>();
+			while(!matchingStack.isEmpty()) {
+				reverseStack.add(matchingStack.pop());
+			}
+			
+			returnVal = returnVal.concat(reverseStack.pop());
+			while(!reverseStack.isEmpty()) {
+				returnVal = returnVal.concat(" -> ");
+				returnVal = returnVal.concat(reverseStack.pop());
 			}
 			
 			
@@ -190,48 +229,93 @@ public class Distance1Map {
 		
 	}
 	
-	/**
+	/** Returns a stack of elements from a root word to a search word.
+	 * The stack is the shortest distance between the two words.
+	 * Each stack begins with a root word and ends with a word 1 away from it.
+	 *  
 	 * 
 	 * Structure of Stacks and Queues:
 	 * 
-	 * Inner Stack:	Set of Strings that vary by one from a root string. Top element is the word that varies by 1.
-	 * Inner Queue:	Queue of inner stacks. Iterate over words matching a root word by reading this queue.
-	 * Outer Stack:	For each queue that does not contain the end value, adds a new queue to the stack until a match is found in the inner queue.
+	 * InnerStack: top element is one step further on path. Bottom is root.
+	 * OuterQueue: queue of all stacks to test.
+	 * 
+	 * Method:
+	 * Beginning with the root word, if the top element of a stack is not a math then
+	 * additional stacks with an additional element are added. 
+	 * The additional elements are all of the un-searched words 1 character away from the top element.
+	 * This method checks all combinations of 1- 2- 3 ... length stacks in ascending order until a match is found or no 
+	 * un-searched words exist to test.
 	 * 
 	 * @return
 	 */
-	private Stack<Queue<Stack<String>>> getPathHelper(String s1, String s2) throws InternalException {
-		Stack<Queue<Stack<String>>> outerStack = new Stack<Queue<Stack<String>>>();
-		boolean hasFoundMatch = false;
-		int infinite = 0;
-		final int NUMLOOPS = 100;
+	private Stack<String> getPathHelper(String s1, String s2){
+		String searchString = s2.toLowerCase(); // Initializes the search string to s1
+		String rootString = s1.toLowerCase();
 		
-		String searchString = s1.toLowerCase(); // Initializes the search string to s1
+		Set<String> searchedWords = new TreeSet<String>();
+		Queue<Stack<String>> outerQueue = new LinkedList<Stack<String>>();
+		Stack<String> returnStack = new Stack<String>();
 		
-		do {
-			Queue<Stack<String>> innerQueue = this.enqueueString(searchString);
-			Queue<Stack<String>> innerQueueCopy = new LinkedList<Stack<String>>(innerQueue);
+		searchedWords.add(rootString);
+		returnStack.add(rootString);
+		
+		Stack<String> initial = new Stack<String>();
+		initial.add(rootString);
+		outerQueue.add(initial);
+		
+		
+		// Queue begins with the set of words branching from the root word.
+		
+		// Queue will continue to add branching words until no more branching possibilities remain.
+		// If top element of a stack in the queue is not a match, a new stack containing the inspected stack plus every word not already searched will be added to the queue.
+		// If a stack has no unexplored branches, no stack will be added to the queue.
+		// Once all branches have been explored, queue will be empty.
+		// If there is a match, the stack that ends in the search value is returned.
+		// If there is no match, the stack returned will contain only the starting value.
+		
+		while(!outerQueue.isEmpty()) {
+			Stack<String> stackToInspect = outerQueue.remove();
+			String top = stackToInspect.peek();
 			
-			while (!innerQueueCopy.isEmpty()) {
-				if(innerQueueCopy.remove().peek().equals(s2)) {
-					hasFoundMatch = true;
-				}
-				
+			//Uncomment to see stack trace in console.
+			//System.out.println(stackToInspect.toString());
+			
+			// Case if top element is a match with the search
+			if (top.equals(searchString)) {
+
+				return stackToInspect;
 			}
 			
-			infinite++; // Increments counter for timeout loop error
+			// Case if top element is not a match.
+			else {
+				// for each word s branching from the top word not in the list of searched words:
+				for(String s : this.get1Diff(top)) {
+					if (!searchedWords.contains(s)) {
+						// Create a copy of the stack to inspect,
+						Stack<String> stackToAppend = new Stack<String>();
+						stackToAppend.addAll(stackToInspect);
+						// Add the branching word s to the top of the stack,
+						stackToAppend.add(s);
+						//Add word to searched strings
+						searchedWords.add(s);
+						// And enqueue the stack with the additional word to the queue for processing.
+						outerQueue.add(stackToAppend);
+					}
+				}
+			}
 			
-			outerStack.push(innerQueue); // Adds queue to outer stack, regardless of whether or not the queue contained a match.
 			
-		} while (!hasFoundMatch && infinite < NUMLOOPS); // If a match is found, stop adding queues. Must add at least the initial queue to the stack.
-		
-		if( infinite >= NUMLOOPS) {
-			throw new InternalException("Match not found in " + NUMLOOPS + "levels of search.");
 		}
 		
 		
-		return outerStack;
+		return returnStack;
+		
+		
+		
+		
 	}
+	
+
 	
 	
 	

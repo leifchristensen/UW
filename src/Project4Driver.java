@@ -8,7 +8,7 @@ import com.sun.media.sound.InvalidDataException;
 public class Project4Driver {
 
 
-	public static void main(String[] args) throws InvalidDataException, FileNotFoundException {
+	public static void main(String[] args) throws InvalidDataException, FileNotFoundException, InterruptedException {
 		
 		Distance1Map distMap = new Distance1Map();
 		
@@ -24,9 +24,13 @@ public class Project4Driver {
 		
 		int dist = -1;
 		
-		//dist = distMap.distance(input[0], input[1]);
+		System.out.println(distMap.differBy1(input[0], input[1]));
 		
-		System.out.println(distMap.lengthMap.toString());
+		System.out.println(distMap.getPath(input[0], input[1]));
+		
+		dist = distMap.distance(input[0], input[1]);
+		
+		//System.out.println(distMap.lengthMap.toString());
 		
 		//System.out.println("Contains " + input[0] + map.lengthMap.contains(input[0]));
 		
