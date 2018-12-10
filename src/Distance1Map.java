@@ -2,7 +2,7 @@ package src;
 
 import java.util.*;
 
-import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
+import javax.activity.InvalidActivityException;
 
 public class Distance1Map {
 	
@@ -67,32 +67,6 @@ public class Distance1Map {
 		return this.map.keySet().contains(s);
 	}	
 	
-	
-	/**
-	 * Returns a set of stacked strings. 
-	 * Each stack contains two elements, a top element with a word 
-	 * 	differing from the input by 1, 
-	 * 	and the bottom element containing the original input.
-	 * Top elements of each stack are the set of all words differing by 1 from the input, including the input.
-	 * @param input
-	 * @return
-	 */
-	private Queue<Stack<String>> enqueueString(String input){
-		
-		Queue<Stack<String>> queue = new LinkedList<Stack<String>>();
-		
-		Set<String> mappedWords = this.get1Diff(input);
-		
-		for(String s : mappedWords) {
-			Stack<String> tempStack = new Stack<String>();
-			tempStack.push(input);
-			tempStack.push(s);
-			queue.add(tempStack);
-		}
-		
-		return queue;
-		
-	}
 	
 	/**
 	 * Tests if two strings differ by 0 or 1 characters
@@ -174,57 +148,66 @@ public class Distance1Map {
 	}
 	
 	/**
-	 * s1 -> queue1base -> queue2base -> s2
+	 * Returns a comma-separated list of strings in a path between two words. If no path is possible, error thrown.
+	 * s1, queue1base, queue2base, s2
 	 * @param s1
 	 * @param s2
 	 * @return
+	 * @throws InvalidActivityException 
 	 */
-	public String getPath(String s1, String s2) {
+	public String getPath(String s1, String s2) throws InputMismatchException, InvalidActivityException {
+		
+				
+		 // Case of s1 not in dictionary
+		if (!this.lengthMap.contains(s1)) {
+			throw new InputMismatchException("String not in provided dictionary: " + s1);
+		} else 
+			
+		// Case of s2 not in dictionary
+		if (!this.lengthMap.contains(s2)) {
+			throw new InputMismatchException("String not in provided dictionary: " + s2);
+		}
 		
 		// Case of identical strings
 		if(s1.toLowerCase().equals(s2.toLowerCase())){
-			return s1 + " -> " + s2;
+			return s1.toLowerCase();			
 		} else 
+			
 		// Case of different lengths
-			if(s1.length() != s2.length()) {
-				return "Different length strings";
+		if(s1.length() != s2.length()) {
+			throw new InputMismatchException("Different length strings");
 		}
 		
 		String returnVal = "";
 		
-		try {
-			Stack<String> matchingStack = this.getPathHelper(s1, s2);
-			
-			
-			
-			// If no path, return stack will be size 1. 
-			// Because identical strings are handled above, this means no path is possible. 
-			if(matchingStack.size() == 1) {
-				return "No path possible";
-			}
-			
-			
-			
-			// reverses stack
-			Stack<String> reverseStack = new Stack<String>();
-			while(!matchingStack.isEmpty()) {
-				reverseStack.add(matchingStack.pop());
-			}
-			
+	
+		Stack<String> matchingStack = this.getPathHelper(s1, s2);
+		
+		
+		
+		// If no path, return stack will be size 1. 
+		// Because identical strings are handled above, this means no path is possible. 
+		if(matchingStack.size() == 1) {
+			throw new InvalidActivityException("No path possible");
+		}
+		
+		
+		
+		// reverses stack
+		Stack<String> reverseStack = new Stack<String>();
+		while(!matchingStack.isEmpty()) {
+			reverseStack.add(matchingStack.pop());
+		}
+		
+		returnVal = returnVal.concat(reverseStack.pop());
+		while(!reverseStack.isEmpty()) {
+			returnVal = returnVal.concat(", ");
 			returnVal = returnVal.concat(reverseStack.pop());
-			while(!reverseStack.isEmpty()) {
-				returnVal = returnVal.concat(" -> ");
-				returnVal = returnVal.concat(reverseStack.pop());
-			}
-			
-			
 		}
 		
-		catch (Exception e) {
-			System.out.print(e);
-			return "No Path";
-		}
 		
+	
+				
 		return returnVal;
 		
 	}

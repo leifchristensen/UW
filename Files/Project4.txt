@@ -1,0 +1,10 @@
+Root Word:		test
+Search Word:	best
+test, best
+Distance between words: 2
+
+Root Word:		lie
+Search Word:	tie
+lie, tie
+Distance between words: 2
+

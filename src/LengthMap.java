@@ -1,7 +1,6 @@
 package src;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
@@ -91,6 +90,13 @@ public class LengthMap {
 	 */
 	public boolean contains(String s) {
 		int length = s.length();
+		
+		// Checks to see if map exists for length
+		if (!this.getMap().containsKey(length)) {
+			return false;
+		}
+		
+		// If set for key exists, return whether the set for that key contains the value.
 		return this.getMap()
 				.get(length)
 				.contains(s);
