@@ -68,7 +68,7 @@ public class MyStack<Type> {
 	
 	@Override
 	public String toString() {
-		return null;
+		return "STACK:     " + this.size() + " | " + this.topNode.toString();
 		
 	}
 }
