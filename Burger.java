@@ -73,10 +73,33 @@ public class Burger {
 	}
 	
 	private void addAllIngredients() {
-		
+		addCategory("Cheese");
+		addCategory("Veggies");
+		addCategory("Sauce");
 	}
 	
-	
+	private void stackChange(String itemToSwapTo, String... itemsToSwapFrom) {
+		// Searches the whole stack for instances of an object, and if found swaps the value of that object with a new value.
+		MyStack<String> tempStack = new MyStack<String>();
+		
+
+		//for each node, if the item equals an item to swap from, change it to the item to swap to and save to the temp stack.
+		while (!this.burgerStack.isEmpty()) {
+			String tempItem = this.burgerStack.pop();
+			for (int i = 0; i < itemsToSwapFrom.length; i++) {
+				if (itemsToSwapFrom[i].equals(tempItem)) {
+					tempItem = itemToSwapTo;
+				} 
+			}
+			tempStack.push(tempItem);
+
+		}
+		// Add nodes back
+		while (!tempStack.isEmpty()) {
+			this.push(tempStack.pop());
+		}
+		
+	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
