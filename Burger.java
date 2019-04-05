@@ -1,16 +1,18 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Burger {
 	
-	private HashMap<String, Integer> priorityMap;
+	private HashMap<String, Integer> recipieMap;
 	
 	private MyStack<String> burgerStack;
 	
 	public Burger(boolean theWorks) {
 		burgerStack = new MyStack<String>();
-		initializePrioityMap();
+		initializeRecipieMap();
 		// for all burgers, add single beef patty and buns.
 		addIngredient("BottomBun");
 		addIngredient("TopBun");
@@ -28,7 +30,37 @@ public class Burger {
 	
 	public void addPatty() {
 		// Must search for the existing patty type and add a new one of the same type
+		String pattyType = "";
 		
+		MyStack<String> tempStack = new MyStack<String>();
+		// Assumes patty element types start with the string "Patty"
+		// for each element, if that element's priority is equal to the patty priority, set the patty type.
+		while (!this.burgerStack.isEmpty()) {
+			String tempItem = this.burgerStack.pop();
+			if(tempItem.contains("Patty")) {
+				pattyType = tempItem;
+				
+			}
+			tempStack.push(tempItem);
+
+		}
+		
+		boolean pattyAdded = false;
+		// Add elements back
+		while (!tempStack.isEmpty()) {
+			
+			String tempItem = tempStack.pop();
+			// check the priority of each item added back into the stack. 
+			// when the next item to be added, tempItem, has a higher priority than the highest patty priority,
+			// insert the next patty into the stack before adding the rest of the ingredients.
+			
+			
+			if(recipieMap.get(tempItem) >= 8 && !pattyAdded) { // Assuming patties are added at recipie priority 8
+				this.burgerStack.push(pattyType);
+				pattyAdded = true;
+			}			
+			this.burgerStack.push(tempItem);
+		}
 	}
 	
 	public void addCategory(String type) {
@@ -52,7 +84,7 @@ public class Burger {
 			addIngredient("Baron-Sauce");
 			break;
 		default:
-			System.out.println("ERROR: BAD CATEGORY");
+			System.out.println("ERROR: BAD CATEGORY " + type);
 			break;
 		}
 	}
@@ -78,7 +110,7 @@ public class Burger {
 			removeIngredient("Baron-Sauce");
 			break;
 		default:
-			System.out.println("ERROR: BAD CATEGORY");
+			System.out.println("ERROR: BAD CATEGORY " + type);
 			break;
 		}
 	}
@@ -87,51 +119,55 @@ public class Burger {
 		// Must be in proper location
 		MyStack<String> tempStack = new MyStack<String>();
 		String tempItem = "";
-		try {
-			int targetPriority = this.priorityMap.get(type); // Stack priority to insert element at.
-			// removes all ingredients from the temp stack with a higher priority than the one to be added,
-			// adds the new ingredient to the temp stack,
-			// then adds all ingredients back to the main stack.
-			
-			// If empty, add the ingredient to the main stack regardless of position.
-			if(burgerStack.isEmpty()) {
-				this.burgerStack.push(type);
-			} else {
-
-				int tempPriority = this.priorityMap.get(burgerStack.peek());
-				while (!burgerStack.isEmpty() && tempPriority >= targetPriority) {
-					tempItem = burgerStack.pop();
-					// Priority looks at the next object in the stack. 
-					// If this next object has a lower priority than the target, break the loop.
-					if (burgerStack.isEmpty()) {
-						tempPriority = -1;
-					} else {
-						tempPriority = this.priorityMap.get(burgerStack.peek());
-					}
-					
-					tempStack.push(tempItem);
-					
-				}	
-				
-				// Add the new ingredient after elements with a higher priority have been removed.
-				tempStack.push(type);
-				
-				
-				// Add elements back
-				while (!tempStack.isEmpty()) {
-					this.burgerStack.push(tempStack.pop());
-				}
-			}
-		} catch (NullPointerException e) {
-			
-			throw new NullPointerException("Invalid Ingredient: " + type);
+		// Only can add an ingredient that is in recipie.
+		if(!this.recipieMap.containsKey(type)) {
+			throw new IllegalArgumentException("ERROR: recipie does not contain " + type);
 		}
+		int targetPriority = this.recipieMap.get(type); // Stack priority to insert element at.
+		// removes all ingredients from the temp stack with a higher priority than the one to be added,
+		// adds the new ingredient to the temp stack,
+		// then adds all ingredients back to the main stack.
+		
+		// If empty, add the ingredient to the main stack regardless of position.
+		if(burgerStack.isEmpty()) {
+			this.burgerStack.push(type);
+		} else {
+
+			int tempPriority = this.recipieMap.get(burgerStack.peek());
+			while (!burgerStack.isEmpty() && tempPriority >= targetPriority) {
+				tempItem = burgerStack.pop();
+				// Priority looks at the next object in the stack. 
+				// If this next object has a lower priority than the target, break the loop.
+				if (burgerStack.isEmpty()) {
+					tempPriority = -1;
+				} else {
+					tempPriority = this.recipieMap.get(burgerStack.peek());
+				}
+				
+				tempStack.push(tempItem);
+				
+			}	
+			
+			// Add the new ingredient after elements with a higher priority have been removed.
+			tempStack.push(type);
+			
+			
+			// Add elements back
+			while (!tempStack.isEmpty()) {
+				this.burgerStack.push(tempStack.pop());
+			}
+		}
+		
 		
 	}
 	
 	public void removeIngredient(String type) {
 		MyStack<String> tempStack = new MyStack<String>();
 		String tempItem = "";
+		// Throws exception if type is not in recipe 
+		if(!this.recipieMap.containsKey(type)) {
+			throw new IllegalArgumentException("ERROR: recipie does not contain " + type);
+		}
 		// pops each element to the temp stack except ingredients to remove, then adds ingredients back to the main stack.
 		while (!burgerStack.isEmpty()) {
 			tempItem = burgerStack.pop();
@@ -182,32 +218,46 @@ public class Burger {
 		
 	}
 	
-	private void initializePrioityMap() {
+	private void initializeRecipieMap() {
 		// Sets priorities for each ingredient. Priorities determine placement when adding new ingredients.
-		this.priorityMap = new HashMap<String, Integer>();
-		priorityMap.put("BottomBun", 0); // Bottom bun has lowest priority.
-		priorityMap.put("Ketchup", 1);
-		priorityMap.put("Mustard", 2);
-		priorityMap.put("Mushrooms", 3);
-		priorityMap.put("PattyBeef", 4);
-		priorityMap.put("PattyChicken", 4);
-		priorityMap.put("PattyVeggie", 4);
-		priorityMap.put("Cheddar", 5);
-		priorityMap.put("Mozzarella", 6);
-		priorityMap.put("Pepperjack", 7);
-		priorityMap.put("Onions", 8);
-		priorityMap.put("Tomato", 9);
-		priorityMap.put("Lettuce", 10);
-		priorityMap.put("Baron-Sauce", 11);
-		priorityMap.put("Mayonnaise", 12);
-		priorityMap.put("TopBun", 13);
-		priorityMap.put("Pickle", 14);
+		this.recipieMap = new HashMap<String, Integer>();
+		recipieMap.put("BottomBun", 0); // Bottom bun has lowest priority.
+		recipieMap.put("Ketchup", 1);
+		recipieMap.put("Mustard", 2);
+		recipieMap.put("Mushrooms", 3);
+		recipieMap.put("PattyBeef", 4);
+		recipieMap.put("PattyChicken", 4);
+		recipieMap.put("PattyVeggie", 4);
+		recipieMap.put("Cheddar", 5);
+		recipieMap.put("Mozzarella", 6);
+		recipieMap.put("Pepperjack", 7);
+		recipieMap.put("Onions", 8);
+		recipieMap.put("Tomato", 9);
+		recipieMap.put("Lettuce", 10);
+		recipieMap.put("Baron-Sauce", 11);
+		recipieMap.put("Mayonnaise", 12);
+		recipieMap.put("TopBun", 13);
+		recipieMap.put("Pickle", 14);
 	}
 
 	public static void main(String[] args) {
 		
 		testBurger();
-		parseLine("Burger");
+		
+		// Tests all lines in customer.txt
+		try {
+			Scanner customerScanner = new Scanner(new File("./customer.txt"));
+			while (customerScanner.hasNext()) {
+				parseLine(customerScanner.nextLine());
+			}
+			customerScanner.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			parseLine("Burger");
+			parseLine("Baron Burger with no Veggies Sauce but Baron-Sauce");
+		}
+		
 	}
 	
 	public static void testBurger() {
@@ -235,8 +285,19 @@ public class Burger {
 		// Default Burger with a single added category and a single removed ingredient
 		Burger testBurger5 = new Burger(false);
 		testBurger5.addCategory("Veggies");
+		System.out.println(testBurger5.toString());
 		testBurger5.removeIngredient("Mushrooms");
 		System.out.println(testBurger5.toString());
+		
+		// Baron burger with added patty
+		Burger testBurger6 = new Burger(false);
+		testBurger6.addCategory("Cheese");
+		testBurger6.addPatty();
+		System.out.println(testBurger6);
+		
+		// Change burger6 patty type
+		testBurger6.changePatties("PattyChicken");
+		System.out.println(testBurger6);
 	}
 	
 	public static void testMyStack() {
@@ -248,7 +309,7 @@ public class Burger {
 		System.out.println(line);
 		boolean theWorks = false; // True if baron burger
 		int numPatties = 1; // double, triple are other options
-		String pattyType = "Beef";
+		String pattyType = "PattyBeef";
 		LinkedList<String> ommissionsOrAdditions = new LinkedList<String>(); // Ommisions if theWorks, additions if default burger.
 		LinkedList<String> exceptions = new LinkedList<String>();
 		
@@ -270,75 +331,87 @@ public class Burger {
 			
 			// Patty Type
 			else if(tempWord.equals("Chicken")) {
-				pattyType = "pattyChicken";
+				pattyType = "PattyChicken";
 			} else if (tempWord.equals("Veggie")) {
-				pattyType = "pattyVegie";
+				pattyType = "PattyVegie";
 			}
 			
-			// Ommissions/Additions/Exceptions
-			else if(tempWord.equals("With")) {
-				// On the word With, add ingredients to ommissions/additions
+			// Omissions/Additions/Exceptions
+			else if(tempWord.equals("with")) {
+				// On the word With, add ingredients to omissions/additions
 				while(lineScanner.hasNext()) {
 					tempWord = lineScanner.next();
-					// Add all indredients to ommisions until exceptions, passing over known non-ingredient words.
-					if(!tempWord.equals("no") && !tempWord.equals("except")) {
+					// Add all ingredients to omissions until exceptions, passing over the word no.
+					if(!tempWord.equals("no") && !tempWord.equals("but")) {
 						ommissionsOrAdditions.add(tempWord);
-					} else if(tempWord.equals("except")) { // On the word Except, add all remaining words to exceptions.
+					} else if(tempWord.equals("but")) { // On the word but, add all remaining words to exceptions passing over the word no.
 						while(lineScanner.hasNext()) {
-							exceptions.add(lineScanner.next());
+							tempWord = lineScanner.next();
+							if(!tempWord.equals("no")) {
+								exceptions.add(tempWord);
+							}
+							
 						}
 					}
 				}
 			}
 				
-			// Build burger from variables
-			// Initialize with theWorks
-			Burger testBurger = new Burger(theWorks);
-			// Adds patties
-			for(int i = 0; i < numPatties; i++) {
-				testBurger.addPatty();
-			}
-			// Changes patty type
-			testBurger.changePatties(pattyType);
-			// if theWorks, remove ommissions and then add exceptions
-			if(theWorks) {
-				for(String s : ommissionsOrAdditions) {
-					try { // Tries to remove each ingredient/category.
-						// If adding an ingredient throws an exception, try to removing the string as a category instead.
-						testBurger.removeIngredient(s);
-					} catch (Exception e) {
-						testBurger.removeCategory(s);
-					}
-				}
-				// Adds back exceptions
-				for(String s : exceptions) {
-					try { // Tries to add each ingredient/category.
-						// If removing an ingredient throws an exception, try to removing the string as a category instead.
-						testBurger.addIngredient(s);
-					} catch (Exception e) {
-						testBurger.addCategory(s);
-					}
-				}
-			} else { // If standard, add additions and then remove exceptions 
-				for(String s : ommissionsOrAdditions) {
-					try { 
-						testBurger.removeIngredient(s);
-					} catch (Exception e) {
-						testBurger.removeCategory(s);
-					}
-				}
-				// Adds back exceptions
-				for(String s : exceptions) {
-					try { 
-						testBurger.addIngredient(s);
-					} catch (Exception e) {
-						testBurger.addCategory(s);
-					}
-				}
-			}
+			
 			
 		}
+		lineScanner.close();
+		// Build burger from variables
+		// Initialize with theWorks
+		Burger testBurger = new Burger(theWorks);
 		
+		
+		// if theWorks, remove ommissions and then add exceptions
+		if(theWorks) {
+			for(String s : ommissionsOrAdditions) {
+				try { // Tries to remove each ingredient/category.
+					// If adding an ingredient throws an exception, try to removing the string as a category instead.
+					testBurger.removeIngredient(s);
+				} catch (IllegalArgumentException e) {
+					testBurger.removeCategory(s);
+				}
+			}
+			// Adds back exceptions
+			for(String s : exceptions) {
+				try { // Tries to add each ingredient/category.
+					// If removing an ingredient throws an exception, try to removing the string as a category instead.
+					testBurger.addIngredient(s);
+				} catch (IllegalArgumentException e) {
+					testBurger.addCategory(s);
+				}
+			}
+		} else { // If standard, add additions and then remove exceptions 
+			for(String s : ommissionsOrAdditions) {
+				try { 
+					testBurger.addIngredient(s);
+				} catch (IllegalArgumentException e) {
+					testBurger.addCategory(s);
+				}
+			}
+			// Adds back exceptions
+			for(String s : exceptions) {
+				try { 
+					testBurger.removeIngredient(s);
+				} catch (IllegalArgumentException e) {
+					testBurger.removeCategory(s);
+				}
+			}
+		}
+		
+		// Adds patties
+		for(int i = 1; i < numPatties; i++) {
+			testBurger.addPatty();
+		}
+		
+		// Changes patty type
+		testBurger.changePatties(pattyType);
+
+		
+		System.out.println(testBurger.toString());
 		
 	}
 
