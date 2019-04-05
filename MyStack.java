@@ -1,4 +1,8 @@
-
+/*
+ * Leif Christensen
+ * Assignment 1
+ * Apr 5 2019
+ */
 public class MyStack<Type> {
 	
 	private class MyStackNode {
@@ -77,7 +81,7 @@ public class MyStack<Type> {
 		//for each node, add a node to the temp stack and increase the counter.
 		while (!this.isEmpty()) {
 			Type tempElement = this.pop();
-			sb.append("["  + tempElement.toString() + "] ");
+			sb.append("["  + tempElement + "] ");
 			tempStack.push(tempElement);			
 		}
 		// Add nodes back

@@ -1,3 +1,9 @@
+/*
+ * Leif Christensen
+ * Assignment 1
+ * Apr 5 2019
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -6,7 +12,8 @@ import java.util.Scanner;
 
 public class Burger {
 	
-	private HashMap<String, Integer> recipieMap;
+	// Contains the list of valid ingredients. Ingredients are mapped to their numerical order.
+	private HashMap<String, Integer> recipieMap; 
 	
 	private MyStack<String> burgerStack;
 	
@@ -34,7 +41,7 @@ public class Burger {
 		
 		MyStack<String> tempStack = new MyStack<String>();
 		// Assumes patty element types start with the string "Patty"
-		// for each element, if that element's priority is equal to the patty priority, set the patty type.
+		// If an element contains "Patty", change the patty type
 		while (!this.burgerStack.isEmpty()) {
 			String tempItem = this.burgerStack.pop();
 			if(tempItem.contains("Patty")) {
@@ -51,8 +58,8 @@ public class Burger {
 			
 			String tempItem = tempStack.pop();
 			// check the priority of each item added back into the stack. 
-			// when the next item to be added, tempItem, has a higher priority than the highest patty priority,
-			// insert the next patty into the stack before adding the rest of the ingredients.
+			// when the next item to be added back has a higher priority than the patty priority,
+			// insert a patty into the stack before adding the rest of the ingredients.
 			
 			
 			if(recipieMap.get(tempItem) >= 8 && !pattyAdded) { // Assuming patties are added at recipie priority 8
@@ -242,20 +249,26 @@ public class Burger {
 
 	public static void main(String[] args) {
 		
+		testMyStack();
+		
 		testBurger();
 		
 		// Tests all lines in customer.txt
+		System.out.println("-----LINE TEST-----");
 		try {
 			Scanner customerScanner = new Scanner(new File("./customer.txt"));
+			int orderNum = 0;
 			while (customerScanner.hasNext()) {
-				parseLine(customerScanner.nextLine());
+				String line = customerScanner.nextLine();
+				System.out.println("Processing Order " + orderNum + ": " + line);
+				parseLine(line);
+				System.out.println();
 			}
 			customerScanner.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("expected file: ./customer.txt");
 			e.printStackTrace();
-			parseLine("Burger");
-			parseLine("Baron Burger with no Veggies Sauce but Baron-Sauce");
+			
 		}
 		
 	}
@@ -264,49 +277,88 @@ public class Burger {
 		
 		System.out.println("-----BURGER TEST-----");
 		
-		// Default burger
+		System.out.println("--Default burger");
 		Burger testBurger0 = new Burger(false);		
 		System.out.println(testBurger0.toString());
 		
-		// Full Baron Burger
+		System.out.println("--Full Baron Burger");
 		Burger testBurger1 = new Burger(true);		
 		System.out.println(testBurger1.toString());
 		
-		// Default Burger with a single added ingredient
+		System.out.println("--Default Burger with a single added ingredient");
 		Burger testBurger3 = new Burger(false);
 		testBurger3.addIngredient("Onions");
 		System.out.println(testBurger3.toString());
 		
-		// Default Burger with a single added category
+		System.out.println("--Default Burger with a single added category");
 		Burger testBurger4 = new Burger(false);
 		testBurger4.addCategory("Sauce");
 		System.out.println(testBurger4.toString());
 		
-		// Default Burger with a single added category and a single removed ingredient
+		System.out.println("--Default Burger with a single added category and a single removed ingredient");
 		Burger testBurger5 = new Burger(false);
 		testBurger5.addCategory("Veggies");
 		System.out.println(testBurger5.toString());
 		testBurger5.removeIngredient("Mushrooms");
 		System.out.println(testBurger5.toString());
 		
-		// Baron burger with added patty
+		System.out.println("--Default burger with added patty");
 		Burger testBurger6 = new Burger(false);
 		testBurger6.addCategory("Cheese");
 		testBurger6.addPatty();
 		System.out.println(testBurger6);
 		
-		// Change burger6 patty type
+		System.out.println("--Change burger6 patty type");
 		testBurger6.changePatties("PattyChicken");
 		System.out.println(testBurger6);
 	}
 	
 	public static void testMyStack() {
 		System.out.println("-----STACK TEST-----");
+		
+		// Create an empty test stack of Integers
+		System.out.println("--New stack");
+		MyStack<Integer> testStack0 = new MyStack<Integer>();
+		
+		// Tests is empty while empty
+		System.out.println("--Empty");
+		System.out.println("empty = " + testStack0.isEmpty());
+		System.out.println(testStack0.toString());
+		
+		// Adds an integer to the stack
+		System.out.println("--Push");
+		testStack0.push(1);
+		System.out.println("empty = " + testStack0.isEmpty());
+		System.out.println(testStack0.toString());
+		
+		// Tests peek
+		System.out.println("--Peek");
+		System.out.println(testStack0.peek());
+		System.out.println("empty = " + testStack0.isEmpty());
+		System.out.println(testStack0.toString());
+		
+		// Tests pop
+		System.out.println("--Pop");
+		System.out.println(testStack0.pop());
+		System.out.println("empty = " + testStack0.isEmpty());
+		System.out.println(testStack0.toString());
+		
+		// Tests MyStack of String Arrays
+		System.out.println("--New stack String Array");
+		MyStack<String[]> testStack1 = new MyStack<String[]>();
+		testStack1.push(new String[] {"String0", "String1"});
+		testStack1.push(new String[] {"String2", "String3"});
+		System.out.println(testStack1.toString());
+		
+		// Tests null
+		System.out.println("--New stack null");
+		MyStack<Object> testStack2 = new MyStack<Object>();
+		testStack1.push(null);
+		System.out.println(testStack2.toString());
 	}
 	
 	public static void parseLine(String line) {
-		System.out.println("-----LINE TEST-----");
-		System.out.println(line);
+		
 		boolean theWorks = false; // True if baron burger
 		int numPatties = 1; // double, triple are other options
 		String pattyType = "PattyBeef";
