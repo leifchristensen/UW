@@ -14,6 +14,7 @@ public class MyStack<Type> {
 			return this.nodeObject;
 		}
 		
+		
 		private MyStackNode getNodePrevious() {
 			return this.nodePrevious;
 		}
@@ -31,7 +32,7 @@ public class MyStack<Type> {
 	}
 	
 	public boolean isEmpty() {
-		return this.topNode.equals(null);
+		return this.topNode == null;
 	}
 	
 	public void push(Type item) {
@@ -68,7 +69,22 @@ public class MyStack<Type> {
 	
 	@Override
 	public String toString() {
-		return "STACK:     " + this.size() + " | " + this.topNode.toString();
+		StringBuilder sb = new StringBuilder();
+		sb.append("STACK: ");
+		// Prints each node.
+		MyStack<Type> tempStack = new MyStack<Type>();
+		
+		//for each node, add a node to the temp stack and increase the counter.
+		while (!this.isEmpty()) {
+			Type tempElement = this.pop();
+			sb.append("["  + tempElement.toString() + "] ");
+			tempStack.push(tempElement);			
+		}
+		// Add nodes back
+		while (!tempStack.isEmpty()) {
+			this.push(tempStack.pop());
+		}
+		return sb.toString();
 		
 	}
 }
