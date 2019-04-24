@@ -66,6 +66,19 @@ public final class Genome implements Comparable<Genome> {
 		if (toChange) this.change();
 	}
 	
+	public void crossover(Genome other) {
+		LinkedList<Character> currentString;
+		LinkedList<Character> newString = new LinkedList<Character>();
+		int index = 0;
+		if (rand.nextBoolean()) currentString = other.getCharSequence();
+		else {
+			currentString = this.charSequence;
+		}
+		if (index <= currentString.size()) {
+			this.
+		}
+	}
+	
 	public int getFitness() {
 		int fitness = 0;
 		char[] targetChars = target.toUpperCase().toCharArray();
@@ -90,7 +103,7 @@ public final class Genome implements Comparable<Genome> {
 	
 	@Override
 	public int compareTo(Genome other) {		
-		return this.getFitness(target) - Objects.requireNonNull(other).getFitness(target);
+		return this.getFitness() - Objects.requireNonNull(other).getFitness();
 	}
 	
 	
