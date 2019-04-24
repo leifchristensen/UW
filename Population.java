@@ -4,21 +4,21 @@ import java.util.Random;
 public final class Population {
 	
 	private LinkedList<Genome> populationList;
-	private final int initPopulation = 12;
+	private final int initPopulation = 50;
 	private Random rand;
 	private Genome mostFit;
 	
 	public Population() {
 		this.populationList = new LinkedList<Genome>();
 		rand = new Random();
-		for (int i = 1; 1 < initPopulation; i++) {
-			this.populationList.add(new Genome());
+		for (int i = 1; i <= initPopulation; i++) {
+			this.populationList.add(new Genome(.4));
 			// Sets the first as most fit, then updates for every subsequent genome as it's added.
 			// Future sorts are taken care of by maintaining ordering in sort.
 			if (i == 1) {
 				mostFit = populationList.getFirst();
 			} else {
-				if (mostFit.getFitness() < populationList.getLast().getFitness()) {
+				if (mostFit.fitness() < populationList.getLast().fitness()) {
 					mostFit = populationList.getLast();
 				}
 			}
@@ -31,28 +31,53 @@ public final class Population {
 	}
 	
 	private Genome generateRandGenome() {
-		if(rand.nextBoolean()) return 
-		
+		// Get one of the most fit genomes
+		Genome randGenome = populationList.get(rand.nextInt(initPopulation/2));
+		// CLones a random genome
+		Genome newGenome = new Genome(randGenome);
+		// Half of the time, cross this random genome with another random genome
+		if(rand.nextBoolean()) {
+			newGenome.crossover(populationList.get(rand.nextInt(initPopulation/2)));
+		} 
+		// Mutate the result whether crossed over or not.
+		newGenome.mutate();
+		return newGenome;
 	}
 	
 	public void day() {
-		this.checkFitness(); // Updates most fit and sorts list.
-		// starts at end out of bound when removing entries.
-		// iterates up the list until halfway + 1 to ensure a solitary entry is not removed.
-		for(int i = this.populationList.size(); i == this.populationList.size() / 2 + 1 ; i--) { 
-			// Starting at halfway through the list sorted above, delete every genome.
+		//this.checkFitness(); 
+		for(int i = this.populationList.size()-1; i >= initPopulation / 2  ; i--) { 
 			this.populationList.remove(i);
 		}
 		
+		
 		// Adds new genomes to list until population size is reached again.
 		while (this.populationList.size() < initPopulation) {
-			
+			populationList.add(generateRandGenome());
 		}
-		
+		checkFitness();
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("____________NEW DAY___________" +"\r\n");
+		sb.append("MOST FIT:  " + this.mostFit.fitness() + " " + this.mostFit.toString() + "\r\n");
+		/*
+		for (Genome g : this.populationList) {
+			sb.append(g.toString() + "\r\n");
+		} */
+		return sb.toString();
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		Population pop = new Population();
+		int i = 0;
+		while (pop.mostFit.fitness() > 0 && i < 10000 ) {
+			pop.day();
+			System.out.print(i++);
+			System.out.print(pop.toString());
+		}
+		
 
 	}
 

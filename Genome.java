@@ -3,28 +3,40 @@ import java.util.Objects;
 import java.util.Random;
 
 public final class Genome implements Comparable<Genome> {
-	
-	private static final String target = "LEIF CHRISTENSEN";
+	// "CHRISTOPHER PAUL MARRIOTT"
+	private static final String target = "CHRISTOPHER PAUL MARRIOTT";
 	
 	private LinkedList<Character> charSequence;
 	
 	private static final char[] validChars = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',' ','-','\''};
 	
 	private Random rand;
+	private double mutationRate;
 	
-	public Genome() {
+	
+
+	public Genome(double mutationRate) {
+		if(mutationRate < 0 || mutationRate > 1) {
+			throw new IllegalArgumentException("mutationRate must be between 0 and 1");
+		}
 		this.charSequence = new LinkedList<Character>();
 		charSequence.add(validChars[0]);
 		rand = new Random();
+		this.mutationRate = mutationRate;
 	}
 	
 	public Genome(Genome other) {
 		this.charSequence = other.getCharSequence();
 		rand = new Random();
+		this.mutationRate = other.getMutationRate();
 	}
 	
 	public LinkedList<Character> getCharSequence() {
 		return new LinkedList<Character>(charSequence);
+	}
+	
+	public double getMutationRate() {
+		return mutationRate;
 	}
 	
 	private void add() {
@@ -38,8 +50,8 @@ public final class Genome implements Comparable<Genome> {
 	}
 	
 	private void remove() {
-		// Only remove if there is an element to remove.
-		if (this.charSequence.size() > 0) {
+		// Only remove if length 2+.
+		if (this.charSequence.size() > 2) {
 			int removePos = rand.nextInt(this.charSequence.size());
 			this.charSequence.remove(removePos);
 		}
@@ -57,13 +69,13 @@ public final class Genome implements Comparable<Genome> {
 	}
 	
 	public void mutate() {
-		boolean toAdd = rand.nextBoolean();
-		boolean toRemove = rand.nextBoolean();
-		boolean toChange = rand.nextBoolean();
+		double toAdd = rand.nextDouble();
+		double toRemove = rand.nextDouble();
+		double toChange = rand.nextDouble();
 		
-		if (toAdd) this.add();
-		if (toRemove) this.remove();
-		if (toChange) this.change();
+		if (toAdd < this.mutationRate) this.add();
+		if (toRemove < this.mutationRate) this.remove();
+		if (toChange < this.mutationRate) this.change();
 	}
 	
 	public void crossover(Genome other) {
@@ -75,12 +87,16 @@ public final class Genome implements Comparable<Genome> {
 			else {
 				currentString = this.charSequence;
 			}
-			if ()
-			
+			// If the current string has a character at the current index, add it to the new string.
+			if (index < currentString.size()) {
+				newString.add(currentString.get(index));
+			}
+			index++;
 		}
 	}
 	
-	public int getFitness() {
+	///*
+	public Integer fitness() {
 		int fitness = 0;
 		char[] targetChars = target.toUpperCase().toCharArray();
 		// Adds difference in length.
@@ -89,28 +105,62 @@ public final class Genome implements Comparable<Genome> {
 		// Adds one for each mismatching character
 		for (int i = 0; i < maxLength; i++) {
 			// Checks for length discrepancies before checking for equality. This should prevent index exceptions.
-			if(maxLength >= this.charSequence.size() || maxLength >= targetChars.length || this.charSequence.get(i) != targetChars[i]) {
+			if(maxLength > this.charSequence.size() || maxLength > targetChars.length || this.charSequence.get(i) != targetChars[i]) {
 				fitness++;
 			}
 		}
 		
 		return fitness;
 	}
+	//*/
+	
+	/*
+	
+	public Integer fitness() {
+		int n = this.charSequence.size();
+		int m = this.target.length();
+		
+		int[][] D = new int[n+1][m+1];
+		
+		for (int i = 1; i <= n; i++) {
+			D[i][0] = i;
+			
+		}
+		for (int i = 1; i <= m; i++) {
+			D[0][i] = i;
+		}
+		
+		for (int row = 1; row <= n; row++) {
+			for (int col = 1; col <= m; col++) {
+				if (this.charSequence.get(row-1) == target.toCharArray()[col-1]) {
+					D[row][col] = D[row-1][col-1];
+				} else {
+					int deletion = D[row][col-1]+1;
+					int insert = D[row-1][col]+1;
+					int sub = D[row-1][col-1]+1;
+					D[row][col] = Math.min(deletion, Math.min(insert, sub));
+				}
+			}
+		}
+		
+		return D[n][m] + (int)((Math.abs(n-m) + 1)/2);
+	}
+	*/
 	
 	@Override
 	public String toString() {
-		return "Genome" + this.charSequence.toString();
+		return "Genome " + this.fitness() + " |\t" + this.charSequence.toString();
 	}
 	
 	@Override
 	public int compareTo(Genome other) {		
-		return this.getFitness() - Objects.requireNonNull(other).getFitness();
+		return this.fitness() - Objects.requireNonNull(other).fitness();
 	}
 	
 	
 
 	public static void main(String[] args) {
-		Genome a = new Genome();
+		Genome a = new Genome(.5);
 		a.mutate();
 		System.out.println(a.toString());
 	}
