@@ -29,7 +29,7 @@ public final class Population {
 	}
 	
 	public void day() {
-		
+		for()
 		
 	}
 
