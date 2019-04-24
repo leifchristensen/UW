@@ -4,7 +4,7 @@ import java.util.Random;
 public final class Population {
 	
 	private LinkedList<Genome> populationList;
-	private final int initPopulation = 50;
+	private final int initPopulation = 60;
 	private Random rand;
 	private Genome mostFit;
 	
@@ -60,7 +60,6 @@ public final class Population {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("____________NEW DAY___________" +"\r\n");
 		sb.append("MOST FIT:  " + this.mostFit.fitness() + " " + this.mostFit.toString() + "\r\n");
 		/*
 		for (Genome g : this.populationList) {
@@ -74,10 +73,11 @@ public final class Population {
 		int i = 0;
 		while (pop.mostFit.fitness() > 0 && i < 10000 ) {
 			pop.day();
-			System.out.print(i++);
-			System.out.print(pop.toString());
+			i++;
+			
 		}
 		
+		System.out.print(i + pop.toString());
 
 	}
 
