@@ -67,15 +67,16 @@ public final class Genome implements Comparable<Genome> {
 	}
 	
 	public void crossover(Genome other) {
-		LinkedList<Character> currentString;
+		LinkedList<Character> currentString = this.getCharSequence();
 		LinkedList<Character> newString = new LinkedList<Character>();
 		int index = 0;
-		if (rand.nextBoolean()) currentString = other.getCharSequence();
-		else {
-			currentString = this.charSequence;
-		}
-		if (index <= currentString.size()) {
-			this.
+		while (index <= currentString.size()) {
+			if (rand.nextBoolean()) currentString = other.getCharSequence();
+			else {
+				currentString = this.charSequence;
+			}
+			if ()
+			
 		}
 	}
 	
