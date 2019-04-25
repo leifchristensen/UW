@@ -25,6 +25,10 @@ public final class Population {
 		}
 	}
 	
+	public Genome mostFit() {
+		return new Genome(this.mostFit);
+	}
+	
 	private void checkFitness() {
 		this.populationList.sort(null);
 		this.mostFit = this.populationList.getFirst();

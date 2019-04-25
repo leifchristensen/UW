@@ -83,7 +83,9 @@ public final class Genome implements Comparable<Genome> {
 		LinkedList<Character> newString = new LinkedList<Character>();
 		int index = 0;
 		while (index <= currentString.size()) {
-			if (rand.nextBoolean()) currentString = other.getCharSequence();
+			if (rand.nextBoolean()) {
+				currentString = other.getCharSequence();
+			}
 			else {
 				currentString = this.charSequence;
 			}
