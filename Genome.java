@@ -1,10 +1,17 @@
+/*
+ * Leif Christensen
+ * Assignment 2
+ * Apr 25 2019
+ */
+
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Random;
 
 public final class Genome implements Comparable<Genome> {
 	// "CHRISTOPHER PAUL MARRIOTT"
-	private static final String target = "CHRISTOPHER PAUL MARRIOTT";
+	// Specs seem to show this as a public field instead of a getter/setter method, is this correct?
+	public String target = "LEIF ERIK CHRISTENSEN";
 	
 	private LinkedList<Character> charSequence;
 	
@@ -25,10 +32,10 @@ public final class Genome implements Comparable<Genome> {
 		this.mutationRate = mutationRate;
 	}
 	
-	public Genome(Genome other) {
-		this.charSequence = other.getCharSequence();
+	public Genome(Genome gene) {
+		this.charSequence = gene.getCharSequence();
 		rand = new Random();
-		this.mutationRate = other.getMutationRate();
+		this.mutationRate = gene.getMutationRate();
 	}
 	
 	public LinkedList<Character> getCharSequence() {
@@ -95,8 +102,10 @@ public final class Genome implements Comparable<Genome> {
 			}
 			index++;
 		}
+		this.charSequence = newString;
 	}
 	
+	// Comment this method out and uncomment the other fitness method to change to Edit Distance calculation.
 	///*
 	public Integer fitness() {
 		int fitness = 0;
@@ -116,8 +125,8 @@ public final class Genome implements Comparable<Genome> {
 	}
 	//*/
 	
+	// Uncomment this and comment out the other fitness method to use the Edit Distance calculations.
 	/*
-	
 	public Integer fitness() {
 		int n = this.charSequence.size();
 		int m = this.target.length();
@@ -151,20 +160,12 @@ public final class Genome implements Comparable<Genome> {
 	
 	@Override
 	public String toString() {
-		return "Genome " + this.fitness() + " |\t" + this.charSequence.toString();
+		return this.charSequence.toString();
 	}
 	
 	@Override
 	public int compareTo(Genome other) {		
 		return this.fitness() - Objects.requireNonNull(other).fitness();
-	}
-	
-	
-
-	public static void main(String[] args) {
-		Genome a = new Genome(.5);
-		a.mutate();
-		System.out.println(a.toString());
 	}
 
 	

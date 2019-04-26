@@ -1,3 +1,9 @@
+/*
+ * Leif Christensen
+ * Assignment 2
+ * Apr 25 2019
+ */
+
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -6,7 +12,8 @@ public final class Population {
 	private LinkedList<Genome> populationList;
 	private final int initPopulation = 60;
 	private Random rand;
-	private Genome mostFit;
+	// Specs seem to show this as a public field instead of a getter method, is this correct?
+	public Genome mostFit;
 	
 	public Population() {
 		this.populationList = new LinkedList<Genome>();
@@ -64,25 +71,9 @@ public final class Population {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("MOST FIT:  " + this.mostFit.fitness() + " " + this.mostFit.toString() + "\r\n");
-		/*
-		for (Genome g : this.populationList) {
-			sb.append(g.toString() + "\r\n");
-		} */
+		sb.append("MOST FIT: Fitness: " + this.mostFit.fitness() + "\t" + this.mostFit.toString());
 		return sb.toString();
 	}
 
-	public static void main(String[] args) {
-		Population pop = new Population();
-		int i = 0;
-		while (pop.mostFit.fitness() > 0 && i < 10000 ) {
-			pop.day();
-			i++;
-			
-		}
-		
-		System.out.print(i + pop.toString());
-
-	}
 
 }
