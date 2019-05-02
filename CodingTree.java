@@ -1,4 +1,7 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -27,33 +30,86 @@ public final class CodingTree {
 				 frequencyList.get(frequencyList.indexOf(o)).weight++;
 			} else {
 				// add character if it doesn't exist.
+				o.weight++;
 				frequencyList.add(o);
 			}
 		});
-		
+		// Add a null char with weight 0.
+		frequencyList.add(new WeightedCharacter(null));
 		// At this point, the frequency list should have all characters in the message with their frequency.
 		
 		// Next step is to map binary data to each character by frequency.
+		// frequencyList.sort(null);
+		System.out.print(frequencyList);
 		
+		PriorityQueue<CharacterNode> charTree = new PriorityQueue<CodingTree.CharacterNode>();
+		for(WeightedCharacter wc : frequencyList) {
+			charTree.add(new CharacterNode(wc));
+		}
+	
 		
 	}
 	
 	private class WeightedCharacter implements Comparable<WeightedCharacter> {
 		
-		// Char data kept as int. Decode will need to convert this back to a char.
-		public int character;
+		public Character character;
 		public int weight;
 		
-		public WeightedCharacter(int inputChar) {
-			this.character = Objects.requireNonNull(inputChar);
+		public WeightedCharacter(Integer inputChar) {
+			if (inputChar == null) {
+				this.character = null;
+			}
+			else {
+				this.character = (char) inputChar.intValue(); // null chars are valid, as this will fill space in end of char strings.
+			}
+			
 			this.weight = 0;
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if(o == null) return false;
+			if(o.getClass() != WeightedCharacter.class) return false;
+			if(((WeightedCharacter) o).character == null) return false;
+			return this.character.equals(((WeightedCharacter) o).character);
 		}
 
 		@Override
 		public int compareTo(WeightedCharacter o) {
+			if(o == null) return 1;
 			return this.weight - o.weight;
 		}
 		
+		public String toString() {
+			return (this.character != null ? this.character : "null") + "|" + this.weight;
+		}
+	}
+	
+	class CharacterNode implements Comparable<CharacterNode>{
+		WeightedCharacter[] characters;
+		int weight;
+		CharacterNode leftBranch;
+		CharacterNode rightBranch;
+		
+		public CharacterNode(WeightedCharacter...weightedCharacters) {
+			this.characters = weightedCharacters;
+			weight = 0;
+			for (WeightedCharacter weightedCharacter : weightedCharacters) {
+				weight += weightedCharacter.weight;
+			}
+			this.leftBranch = null;
+			this.rightBranch = null;
+		}
+		
+		public String toString() {
+			return Arrays.toString(characters);
+		}
+
+		@Override
+		public int compareTo(CharacterNode o) {
+
+			return this.weight - o.weight;
+		}
 	}
 
 }
