@@ -1,3 +1,4 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -109,35 +110,33 @@ public final class CodingTree {
 		// Creates a string builder and a bitwise file writer
 		StringBuilder sb = new StringBuilder();
 		try {
-			FileOutputStream fs = new FileOutputStream("data.dat", true);
-			for(byte b : this.bits) {
+			FileOutputStream fs = new FileOutputStream("data1.dat", true);
+			for(Byte b : this.bits) {
 				// Appends bits to the string builder
-				sb.append(decode(this.codes,b));
+				sb.append(String.valueOf(b));
 				
 				// Appends bits to the bitwise file.
+				fs.write(b);
 				
 			}
+
+			FileWriter fileOut = new FileWriter("data1.txt");
+			BufferedWriter stringOut = new BufferedWriter(fileOut);
+			stringOut.write(sb.toString());
+			stringOut.close();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
 		
-		
-		
-		try {
-			PrintWriter stringOut = new PrintWriter("data.txt");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	private Character decode(Map<Character, String> encodedMap, byte encodedByte) {
 		
 		
 		encodedMap.keySet().forEach(key -> {
-			if (encodedMap.get(key).equals(encodedByteString)) {
+			if (encodedMap.get(key).equals(String.valueOf(encodedByte))) {
 				return;
 			}
 		});
