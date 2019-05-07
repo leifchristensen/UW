@@ -1,13 +1,17 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.CharBuffer;
+
+import sun.java2d.pipe.BufferedBufImgOps;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// testCodingTree();
 		
-		
+		testCompression();
 
 	}
 	
@@ -15,20 +19,19 @@ public class Main {
 		CodingTree testEncode = new CodingTree("message");
 	}
 	
-	public static void testCompression() {
-		try {
-			File input = new File("WarAndPeace.txt");
-			FileReader fileReader = new FileReader(input);
-			
-			StringBuilder parsedString = new StringBuilder();
-			int i;
-			// https://stackoverflow.com/questions/4716503/reading-a-plain-text-file-in-java
-			while ((i=fileReader.read()) != -1) { // -1 indicates end of file
-				parsedString.append(i);
-			}
-		} catch (Exception e) {
-			System.out.println(e);
+	public static void testCompression() throws IOException {
+		
+		File input = new File("WarAndPeace.txt");
+		FileReader fileReader = new FileReader(input);
+		BufferedReader buffer = new BufferedReader(fileReader);
+		StringBuilder parsedString = new StringBuilder();
+		int i;
+		while((i=buffer.read()) != -1) {
+			parsedString.append(((char) i));
 		}
+
+		CodingTree testEncode = new CodingTree(parsedString.toString());
+		buffer.close();
 		
 		
 	}

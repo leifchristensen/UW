@@ -11,20 +11,21 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.function.IntConsumer;
 import java.util.stream.*;
 
 public final class CodingTree {
 	
 	public HashMap<Character, String> codes;
 	
-	public LinkedList<Byte> bits;
+	public String bits;
 
 	public CodingTree(String message) {
 		// Creates a priority queue with character elements sorted by frequency.
 		// Frequency is updated 
 		ArrayList<WeightedCharacter> frequencyList = new ArrayList<CodingTree.WeightedCharacter>();
 		codes = new HashMap<Character, String>();
-		bits = new LinkedList<Byte>();
+		bits = new String();
 		// streams message as chars an
 		// Stream used to keep memory usage low for long files & practice.
 		// https://www.baeldung.com/java-string-to-stream
@@ -46,7 +47,7 @@ public final class CodingTree {
 		
 		// Next step is to create a frequency tree.
 		//frequencyList.sort(null);
-		System.out.println(frequencyList);
+		//System.out.println(frequencyList);
 		
 		PriorityQueue<CharacterNode> charTree = new PriorityQueue<CodingTree.CharacterNode>();
 		for(WeightedCharacter wc : frequencyList) {
@@ -63,7 +64,7 @@ public final class CodingTree {
 			charTree.add(new CharacterNode(leftBranch, rightBranch));
 		}
 		
-		System.out.println(charTree);
+		//System.out.println(charTree);
 		
 		// At this point, the queue contains a single node with branches with a left/right pattern of frequency.
 		// Branches to the left are more common, branches to the right are less common.
@@ -90,30 +91,25 @@ public final class CodingTree {
 	}
 	
 	private void encode(String message) {
-		Stream<Character> messageStream = message.chars().mapToObj(o -> new Character((char) o));
+		IntStream messageStream = message.chars();
 		messageStream.forEach(o -> {
-			this.codes.get(o).chars().forEach(code -> {
-				// for each character in the message, get the corresponding code and add the code to the bit list.
-				if(code == '0') {
-					this.bits.add((byte) 0);
-				} else if (code == '1') {
-					this.bits.add((byte) 1);
-				} else {
-					throw new IllegalArgumentException("Unrecognized character: " + code);
-				}
-			});
+			
+				bits = bits.concat((codes.get((char) o)));
 			
 		});
 	}
+	
+	
 	
 	private void writeFile() {
 		// Creates a string builder and a bitwise file writer
 		StringBuilder sb = new StringBuilder();
 		try {
 			FileOutputStream fs = new FileOutputStream("data1.dat", true);
-			for(Byte b : this.bits) {
+			
+			for(int b : this.bits.chars().toArray()) {
 				// Appends bits to the string builder
-				sb.append(String.valueOf(b));
+				sb.append((char)b);
 				
 				// Appends bits to the bitwise file.
 				fs.write(b);
@@ -132,15 +128,14 @@ public final class CodingTree {
 		
 	}
 	
-	private Character decode(Map<Character, String> encodedMap, byte encodedByte) {
+	private class encodeMap implements IntConsumer {
+
+		@Override
+		public void accept(int value) {
+			
+			
+		}
 		
-		
-		encodedMap.keySet().forEach(key -> {
-			if (encodedMap.get(key).equals(String.valueOf(encodedByte))) {
-				return;
-			}
-		});
-		return null;
 	}
 	
 	private class WeightedCharacter implements Comparable<WeightedCharacter> {
