@@ -9,7 +9,9 @@ import sun.java2d.pipe.BufferedBufImgOps;
 public class Main {
 
 	public static void main(String[] args) throws IOException {
-		//testCodingTree();
+		testCodingTree();
+		
+		System.out.println(">------------------------------------<");
 		
 		testCompression();
 
