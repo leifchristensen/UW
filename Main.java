@@ -11,12 +11,15 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		testCodingTree();
 		
-		//testCompression();
+		testCompression();
 
 	}
 	
 	public static void testCodingTree() {
 		CodingTree testEncode = new CodingTree("message");
+		
+		CodingTree testEncode2 = new CodingTree("TEsnseisni asereui weiiidfn 123 #£ sddfjkseo1"
+				+ "fsdlfkdf$€) {[]} asdfghjklpoiuytrewqzxcvbnm asdfghjklpoiuytrewqzxcvbnm QWERTYUIOPÅÆØLKJHGFDSAZXCVBNM,.-æø1234567890+\\¨'|<");
 	}
 	
 	public static void testCompression() throws IOException {

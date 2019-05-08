@@ -1,17 +1,14 @@
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.PrimitiveIterator.OfInt;
 import java.util.PriorityQueue;
-import java.util.function.IntConsumer;
+import java.util.UUID;
 import java.util.stream.*;
 
 public final class CodingTree {
@@ -42,7 +39,7 @@ public final class CodingTree {
 			}
 		});
 		// Add a null char with weight 0.
-		 frequencyList.add(new WeightedCharacter(null));
+		frequencyList.add(new WeightedCharacter(null));
 		// At this point, the frequency list should have all characters in the message with their frequency.
 		
 		// Next step is to create a frequency tree.
@@ -72,12 +69,13 @@ public final class CodingTree {
 		
 		traverseTree(charTree.poll(), "");
 		
-		System.out.println(this.codes.toString());
+		System.out.println("CODES: " + this.codes.toString());
 		
 		encode(message);
 		
 		writeFile();
 		
+		System.out.println("--Encoded");
 	}
 	
 	// maps a set of unique string codes for every node in a tree.
@@ -103,23 +101,35 @@ public final class CodingTree {
 	
 	private void writeFile() {
 		// Creates a string builder and a bitwise file writer
-		StringBuilder sb = new StringBuilder();
+		// https://stackoverflow.com/questions/6981555/how-to-output-binary-data-to-a-file-in-java
+		
+		
 		try {
-			FileOutputStream fs = new FileOutputStream("data1.dat", true);
-			
+			// txt file output.
+			StringBuilder stringData = new StringBuilder();
 			for(int b : this.bits.chars().toArray()) {
 				// Appends bits to the string builder
-				sb.append((char)b);
+				stringData.append((char) b);
 				
-				// Appends bits to the bitwise file.
-				fs.write(b);
 				
 			}
-
-			FileWriter fileOut = new FileWriter("data1.txt");
+			FileWriter fileOut = new FileWriter("data" + UUID.randomUUID() + ".txt");
 			BufferedWriter stringOut = new BufferedWriter(fileOut);
-			stringOut.write(sb.toString());
+			stringOut.write(stringData.toString());
 			stringOut.close();
+			
+			// Binary output
+			FileOutputStream fs = new FileOutputStream("data" + UUID.randomUUID() + ".dat", true);
+			DataOutputStream binaryData = new DataOutputStream(fs);
+			
+			// parses the byte data from the bit string.
+			byte[] byteData = parseBytes(bits);
+			// Writes the byte data to the data file.
+			binaryData.write(byteData);
+			binaryData.close();
+			fs.close();
+
+			
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -128,16 +138,54 @@ public final class CodingTree {
 		
 	}
 	
-	private class encodeMap implements IntConsumer {
-
-		@Override
-		public void accept(int value) {
-			
-			
+	// parses bytes from a string of binary data. 
+	// string is read 8 characters at a time, then a bytes is created from the chunk of the string until the entire string is consumed.
+	private byte[] parseBytes(String binaryString) {
+		OfInt charStream = binaryString.chars().iterator();
+		LinkedList<String> chunks = new LinkedList<String>();
+				
+		// parse the string for chunks of 8 characters.
+		while(charStream.hasNext()) {
+			String chunk = "0";
+			for (int i = 0; i < Byte.SIZE -1; i++) {
+				if(charStream.hasNext()) {
+					chunk = chunk + parseBit(charStream.next());
+				}
+				// if the end of the file has been reached, append zeros.
+				else {
+					chunk = chunk + 0;
+				}
+			}
+			chunks.add(chunk);
+		}
+		// At this point, the chunks should be filled with strings each containing the most compressed version of the binary string. 
+		// each chunk represents a byte.
+		// next task is to parse the list of chunks into bytes and add the bytes to the return array.
+		byte[] bytesParsed = new byte[chunks.size()];
+		for(int i  = 0; i < chunks.size(); i++) {
+			String chunk = chunks.get(i);
+			Byte chunkByte = Byte.parseByte(chunk,2);
+			//bytesParsed[i] = (byte) Integer.parseInt(chunks.get(i), 2);
+			bytesParsed[i] = chunkByte;
 		}
 		
+		// At this point, the array is full of the most compressed possible bytes with the last byte appended with zeros if needed.
+		return bytesParsed;
 	}
 	
+	private char parseBit(int toParse) {
+		switch (toParse) {
+		case '0':
+			return '0';
+		case '1':
+			return '1';
+		default:
+			throw new IllegalArgumentException("non-binary Character: " + toParse);
+		}
+	}
+	
+	
+	// A character in the frequency tree.
 	private class WeightedCharacter implements Comparable<WeightedCharacter> {
 		
 		public Character character;
@@ -175,6 +223,7 @@ public final class CodingTree {
 		}
 	}
 	
+	// Nodes in the frequency tree.
 	class CharacterNode implements Comparable<CharacterNode>{
 		WeightedCharacter weightedCharacter;
 		int weight;
