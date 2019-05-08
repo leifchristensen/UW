@@ -1,5 +1,6 @@
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PrimitiveIterator.OfInt;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.stream.*;
 
@@ -39,7 +41,7 @@ public final class CodingTree {
 			}
 		});
 		// Add a null char with weight 0.
-		frequencyList.add(new WeightedCharacter(null));
+		//frequencyList.add(new WeightedCharacter(null));
 		// At this point, the frequency list should have all characters in the message with their frequency.
 		
 		// Next step is to create a frequency tree.
@@ -54,28 +56,34 @@ public final class CodingTree {
 		// meaning the top two nodes, and re-add to priority queue, with the new node having a left branch of the newly added node.
 	
 		
-		
+		System.out.println("--Begin Create Tree ");
 		while (charTree.size() > 1) {
 			CharacterNode rightBranch = charTree.poll();
 			CharacterNode leftBranch = charTree.poll();
 			charTree.add(new CharacterNode(leftBranch, rightBranch));
 		}
-		
+		System.out.println("--End Create Tree");
 		//System.out.println(charTree);
 		
 		// At this point, the queue contains a single node with branches with a left/right pattern of frequency.
 		// Branches to the left are more common, branches to the right are less common.
 		// Next step is to traverse the tree and map to the shortest possible unique series of bytes. 
 		
+		System.out.println("--Begin Create Map");
 		traverseTree(charTree.poll(), "");
-		
+		System.out.println("--End Create Map");
 		System.out.println("CODES: " + this.codes.toString());
 		
+		// At this point, the map contains all characters in the message and their associated binary representation.
+		// next task is to encode the message as a string in binary.
+		System.out.println("--Begin Encode");
 		encode(message);
-		
+		System.out.println("--End Encode Map");
+		// At this point, the message is encoded in binary.
+		// Next task is to write the binary message to files.
 		writeFile();
 		
-		System.out.println("--Encoded");
+		System.out.println("--Finished!");
 	}
 	
 	// maps a set of unique string codes for every node in a tree.
@@ -88,13 +96,20 @@ public final class CodingTree {
 		}
 	}
 	
+	// For each character in the message, look up the mapped binary string representation and append it to the bytes string.
 	private void encode(String message) {
+		// https://www.techiedelight.com/convert-intstream-string-vice-versa/
 		IntStream messageStream = message.chars();
+		Stream<String> binaryStream = messageStream.mapToObj(o -> codes.get((char) o));
+		
+		bits = binaryStream.collect(Collectors.joining());
+				/*
 		messageStream.forEach(o -> {
 			
 				bits = bits.concat((codes.get((char) o)));
 			
 		});
+		*/
 	}
 	
 	
@@ -103,6 +118,7 @@ public final class CodingTree {
 		// Creates a string builder and a bitwise file writer
 		// https://stackoverflow.com/questions/6981555/how-to-output-binary-data-to-a-file-in-java
 		
+		System.out.println("--Begin Write File");
 		
 		try {
 			// txt file output.
@@ -113,21 +129,28 @@ public final class CodingTree {
 				
 				
 			}
-			FileWriter fileOut = new FileWriter("data" + UUID.randomUUID() + ".txt");
+			FileWriter fileOut = new FileWriter("text-" + UUID.randomUUID() + ".txt");
 			BufferedWriter stringOut = new BufferedWriter(fileOut);
 			stringOut.write(stringData.toString());
 			stringOut.close();
-			
+			System.out.println("--String File Written");
 			// Binary output
-			FileOutputStream fs = new FileOutputStream("data" + UUID.randomUUID() + ".dat", true);
-			DataOutputStream binaryData = new DataOutputStream(fs);
+			FileOutputStream fs = new FileOutputStream("data-" + UUID.randomUUID() + ".dat", true);
+			//DataOutputStream binaryData = new DataOutputStream(fs);
 			
 			// parses the byte data from the bit string.
-			byte[] byteData = parseBytes(bits);
+			Stream<Byte> byteData = parseBytes(bits);
 			// Writes the byte data to the data file.
-			binaryData.write(byteData);
-			binaryData.close();
+			byteData.forEach(arg0 -> {
+				try {
+					fs.write(arg0);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
 			fs.close();
+			System.out.println("--Data File Written");
 
 			
 		} catch (IOException e1) {
@@ -140,14 +163,15 @@ public final class CodingTree {
 	
 	// parses bytes from a string of binary data. 
 	// string is read 8 characters at a time, then a bytes is created from the chunk of the string until the entire string is consumed.
-	private byte[] parseBytes(String binaryString) {
+	private Stream<Byte> parseBytes(String binaryString) {
 		OfInt charStream = binaryString.chars().iterator();
 		LinkedList<String> chunks = new LinkedList<String>();
 				
 		// parse the string for chunks of 8 characters.
 		while(charStream.hasNext()) {
+			// initial byte must equal zero to prevent overflow.
 			String chunk = "0";
-			for (int i = 0; i < Byte.SIZE -1; i++) {
+			for (int i = 0; i < Byte.SIZE-1; i++) {
 				if(charStream.hasNext()) {
 					chunk = chunk + parseBit(charStream.next());
 				}
@@ -158,19 +182,17 @@ public final class CodingTree {
 			}
 			chunks.add(chunk);
 		}
+		
+		Stream<String> stringChunks = chunks.stream();
 		// At this point, the chunks should be filled with strings each containing the most compressed version of the binary string. 
 		// each chunk represents a byte.
-		// next task is to parse the list of chunks into bytes and add the bytes to the return array.
-		byte[] bytesParsed = new byte[chunks.size()];
-		for(int i  = 0; i < chunks.size(); i++) {
-			String chunk = chunks.get(i);
-			Byte chunkByte = Byte.parseByte(chunk,2);
-			//bytesParsed[i] = (byte) Integer.parseInt(chunks.get(i), 2);
-			bytesParsed[i] = chunkByte;
-		}
+		// next task is to parse the list of chunks into bytes and add the bytes to the return stream.
 		
-		// At this point, the array is full of the most compressed possible bytes with the last byte appended with zeros if needed.
-		return bytesParsed;
+		Stream<Byte> byteChunks = stringChunks.map(o -> Byte.parseByte(o, 2));
+		
+		
+		// At this point, the stream is full of the most compressed possible bytes with the last byte appended with zeros if needed.
+		return byteChunks;
 	}
 	
 	private char parseBit(int toParse) {
