@@ -11,20 +11,26 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		testCodingTree();
 		
-		System.out.println(">------------------------------------<");
+		
 		
 		testCompression();
 
 	}
 	
 	public static void testCodingTree() {
+		System.out.println(">    Basic Message");
 		CodingTree testEncode = new CodingTree("message");
 		
+		System.out.println(">------------------------------------<");
+		
+		System.out.println(">    Advanced Message");
 		CodingTree testEncode2 = new CodingTree("TEsnseisni asereui weiiidfn 123 #£ sddfjkseo1"
 				+ "fsdlfkdf$€) {[]} asdfghjklpoiuytrewqzxcvbnm asdfghjklpoiuytrewqzxcvbnm QWERTYUIOPÅÆØLKJHGFDSAZXCVBNM,.-æø1234567890+\\¨'|<");
 	}
 	
 	public static void testCompression() throws IOException {
+		System.out.println(">------------------------------------<");
+		System.out.println(">    War and Peace");
 		
 		File input = new File("WarAndPeace.txt");
 		FileReader fileReader = new FileReader(input);
