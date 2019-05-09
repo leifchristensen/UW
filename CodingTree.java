@@ -166,10 +166,18 @@ public final class CodingTree {
 		// parse the string for chunks of 8 characters.
 		while(charStream.hasNext()) {
 			// initial byte must equal zero to prevent overflow.
-			String chunk = "0";
-			for (int i = 0; i < Byte.SIZE-1; i++) {
+			String chunk = "";
+			int leadBit = charStream.next();
+			// if leading bit is 1, byte will overflow. 
+			// Change subsequent bits to inverses and 
+			boolean isOverflow = (leadBit == '1');
+			if(isOverflow) chunk = "-";
+			chunk = chunk + parseBit(leadBit, isOverflow);
+			
+			for (int i = 1; i < Byte.SIZE; i++) {
+				
 				if(charStream.hasNext()) {
-					chunk = chunk + parseBit(charStream.next());
+					chunk = chunk + parseBit(charStream.next(), isOverflow);
 				}
 				// if the end of the file has been reached, append zeros.
 				else {
@@ -194,15 +202,13 @@ public final class CodingTree {
 	}
 	
 	// Ensures that all characters are binary.
-	private char parseBit(int toParse) {
-		switch (toParse) {
-		case '0':
-			return '0';
-		case '1':
-			return '1';
-		default:
+	// Gets two's compliments of a binary string if invert is true.
+	private char parseBit(int toParse, boolean invert) {
+		if (toParse != '0' && toParse != '1' ) {
 			throw new IllegalArgumentException("non-binary Character: " + toParse);
 		}
+		
+		return (char) (invert ? (toParse == '1' ? '0' : '1') : toParse);
 	}
 	
 	
