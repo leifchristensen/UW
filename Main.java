@@ -1,21 +1,29 @@
+/*
+ * Leif Christensen
+ * Assignment 3
+ */
+
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.CharBuffer;
-import java.sql.Date;
-import java.util.concurrent.TimeUnit;
-
-import sun.java2d.pipe.BufferedBufImgOps;
 
 public class Main {
 
 	public static void main(String[] args) throws IOException {
 		testCodingTree();
 		
-		
-		File input = new File("WarAndPeace.txt");
-		testCompression(input);
+		try {
+			File input = new File("WarAndPeace.txt");
+			testCompression(input);
+			
+			input = new File("RoyalEnfieldServiceManual.txt");
+			testCompression(input);
+		} catch (FileNotFoundException e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+		}
 
 	}
 	
@@ -56,12 +64,14 @@ public class Main {
 		// Compress
 		long startTime = System.currentTimeMillis();
 		CodingTree testEncode = new CodingTree(parsedString.toString());
-		long runtime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
+		long runtime = System.currentTimeMillis() - startTime;
 		
 
-		System.out.println(">    Original Size: \t" + input.length());
+		System.out.println(">    Original Size: \t" + input.length() );
 		// https://stackoverflow.com/questions/625433/how-to-convert-milliseconds-to-x-mins-x-seconds-in-java
-		System.out.println("Run Time : " + runtime);
+		System.out.printf("Run Time : \t\t%,d milliseconds", runtime);
+		System.out.println();
+		
 	}
 
 }

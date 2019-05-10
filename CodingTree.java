@@ -1,20 +1,19 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+/*
+ * Leif Christensen
+ * Assignment 3
+ */
+
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PrimitiveIterator.OfInt;
 import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.UUID;
 import java.util.stream.*;
 
@@ -46,16 +45,14 @@ public final class CodingTree {
 				frequencyList.add(o);
 			}
 		});
-		// At this point, the frequency list should have all characters in the message with their frequency.
-		
+		// At this point, the frequency list should have all characters in the message with their frequency.		
 		// Next step is to create a frequency tree.
 		
 		PriorityQueue<CharacterNode> charTree = new PriorityQueue<CodingTree.CharacterNode>();
 		for(WeightedCharacter wc : frequencyList) {
 			charTree.add(new CharacterNode(wc));
 		}
-		
-		
+				
 		// beginning with the null character of the char tree, pop two nodes with the lowest weight,
 		// meaning the top two nodes, and re-add to priority queue, with the new node having a left branch of the newly added node.
 		
@@ -68,8 +65,7 @@ public final class CodingTree {
 		// System.out.println("--End Create Tree");
 		
 		// At this point, the queue contains a single node with branches with a left/right pattern of frequency.
-		// Branches to the left are more common, branches to the right are less common.
-		
+		// Branches to the left are more common, branches to the right are less common.		
 		// Next step is to traverse the tree and map to the shortest possible unique series of bytes. 
 		
 		// System.out.println("--Begin Create Map");
@@ -80,16 +76,14 @@ public final class CodingTree {
 		// System.out.println("--End Create Map");
 		// System.out.println("CODES: " + this.codes.toString());
 		
-		// At this point, the map contains all characters in the message and their associated binary representation.
-		
+		// At this point, the map contains all characters in the message and their associated binary representation.		
 		// next task is to encode the message as a string in binary.
 		
 		// System.out.println("--Begin Encode");
 		encode(message);
 		// System.out.println("--End Encode Map");
 		
-		// At this point, the message is encoded in binary.
-		
+		// At this point, the message is encoded in binary.		
 		// Next task is to write the binary message to files.
 		
 		writeFile();
@@ -117,27 +111,22 @@ public final class CodingTree {
 	// Creates a string file writer and a byte file writer
 	private void writeFile() {
 		System.out.println("--Begin Write File");
-		// Text output
+		// Text output f codes
 		// https://stackoverflow.com/questions/6981555/how-to-output-binary-data-to-a-file-in-java
 		try {
 			// txt file output.
-			StringBuilder stringData = new StringBuilder();
-			for(int b : this.bits.chars().toArray()) {
-				// Appends bits to the string builder
-				stringData.append((char) b);
-			}
-			FileWriter fileOut = new FileWriter("text-" + UUID.randomUUID() + ".txt");
-			BufferedWriter stringOut = new BufferedWriter(fileOut);
-			stringOut.write(stringData.toString());
-			stringOut.close();
-			System.out.println("--String File Written");
+			
+			FileWriter fileOut = new FileWriter("codes-" + UUID.randomUUID() + ".txt");
+			fileOut.write(this.codes.toString());
+			fileOut.close();
+			// System.out.println("--String File Written");
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 			
 		try {
 			// Binary output
-			File dataFile = new File("data-" + UUID.randomUUID() + ".dat");
+			File dataFile = new File("data-" + UUID.randomUUID() + ".txt");
 			FileOutputStream fs = new FileOutputStream(dataFile, true);
 			ByteArrayOutputStream byteData = parseBytes(bits);
 			
