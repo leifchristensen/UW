@@ -1,10 +1,14 @@
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -55,31 +59,34 @@ public final class CodingTree {
 		// beginning with the null character of the char tree, pop two nodes with the lowest weight,
 		// meaning the top two nodes, and re-add to priority queue, with the new node having a left branch of the newly added node.
 		
-		System.out.println("--Begin Create Tree ");
+		// System.out.println("--Begin Create Tree ");
 		while (charTree.size() > 1) {
 			CharacterNode rightBranch = charTree.poll();
 			CharacterNode leftBranch = charTree.poll();
 			charTree.add(new CharacterNode(leftBranch, rightBranch));
 		}
-		System.out.println("--End Create Tree");
+		// System.out.println("--End Create Tree");
 		
 		// At this point, the queue contains a single node with branches with a left/right pattern of frequency.
 		// Branches to the left are more common, branches to the right are less common.
 		
 		// Next step is to traverse the tree and map to the shortest possible unique series of bytes. 
 		
-		System.out.println("--Begin Create Map");
-		traverseTree(charTree.poll(), "");
-		System.out.println("--End Create Map");
-		System.out.println("CODES: " + this.codes.toString());
+		// System.out.println("--Begin Create Map");
+		// Only attempt to map nodes if nodes exist.
+		if (!charTree.isEmpty()) {
+			traverseTree(charTree.poll(), "");
+		}
+		// System.out.println("--End Create Map");
+		// System.out.println("CODES: " + this.codes.toString());
 		
 		// At this point, the map contains all characters in the message and their associated binary representation.
 		
 		// next task is to encode the message as a string in binary.
 		
-		System.out.println("--Begin Encode");
+		// System.out.println("--Begin Encode");
 		encode(message);
-		System.out.println("--End Encode Map");
+		// System.out.println("--End Encode Map");
 		
 		// At this point, the message is encoded in binary.
 		
@@ -87,27 +94,23 @@ public final class CodingTree {
 		
 		writeFile();
 		
-		System.out.println("--Finished!");
+		// System.out.println("--Finished!");
 	}
 	
 	// maps a set of unique string codes for every node in a tree.
 	private void traverseTree(CharacterNode node, String startCode) {
 		if (node.leftBranch == null && node.rightBranch == null) {
-			this.codes.put(node.weightedCharacter.character, startCode);
+			if(node.weightedCharacter.character != null) { // Only attempt to map characters that exist.
+
+				this.codes.put(node.weightedCharacter.character, startCode);
+			}
 		} else {
 			traverseTree(node.leftBranch, startCode + "0");
 			traverseTree(node.rightBranch, startCode + "1");
 		}
 	}
 	
-	// For each character in the message, look up the mapped binary string representation and append it to the bytes string.
-	private void encode(String message) {
-		// https://www.techiedelight.com/convert-intstream-string-vice-versa/
-		IntStream messageStream = message.chars();
-		Stream<String> binaryStream = messageStream.mapToObj(o -> codes.get((char) o));
-		
-		bits = binaryStream.collect(Collectors.joining());
-	}
+	
 	
 	
 
@@ -134,21 +137,15 @@ public final class CodingTree {
 			
 		try {
 			// Binary output
-			FileOutputStream fs = new FileOutputStream("data-" + UUID.randomUUID() + ".dat", true);
-			
-			// parses the byte data from the bit string.
-			Stream<Byte> byteData = parseBytes(bits);
+			File dataFile = new File("data-" + UUID.randomUUID() + ".dat");
+			FileOutputStream fs = new FileOutputStream(dataFile, true);
+			ByteArrayOutputStream byteData = parseBytes(bits);
 			
 			// Writes the byte data to the data file.
-			byteData.forEach(arg0 -> {
-				try {
-					fs.write(arg0);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
+			fs.write(byteData.toByteArray());
 			
 			fs.close();
+			System.out.println(">    Final Size: \t" + dataFile.length());
 			System.out.println("--Data File Written");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -159,7 +156,7 @@ public final class CodingTree {
 	
 	// parses bytes from a string of binary data. 
 	// string is read 8 characters at a time, then a bytes is created from the chunk of the string until the entire string is consumed.
-	private Stream<Byte> parseBytes(String binaryString) {
+	private ByteArrayOutputStream parseBytes(String binaryString) {
 		OfInt charStream = binaryString.chars().iterator();
 		LinkedList<String> chunks = new LinkedList<String>();
 				
@@ -192,12 +189,13 @@ public final class CodingTree {
 		// At this point, the chunks should be filled with strings each containing the most compressed version of the binary string. 
 		// each chunk represents a byte.
 		
-		// next task is to parse the list of chunks into bytes and add the bytes to the return stream.
+		// next task is to parse the list of chunks into bytes and add the bytes to the return stream.		
+		ByteArrayOutputStream byteChunks = new ByteArrayOutputStream();
+		stringChunks.map(o -> Byte.parseByte(o, 2)).forEach(byteChunks::write);;		
 		
-		Stream<Byte> byteChunks = stringChunks.map(o -> Byte.parseByte(o, 2));		
+		
 		
 		// At this point, the stream is full of the most compressed possible bytes with the last byte appended with zeros if needed.
-		
 		return byteChunks;
 	}
 	
@@ -211,6 +209,14 @@ public final class CodingTree {
 		return (char) (invert ? (toParse == '1' ? '0' : '1') : toParse);
 	}
 	
+	// For each character in the message, look up the mapped binary string representation and append it to the bytes string.
+	private void encode(String message) {
+		// https://www.techiedelight.com/convert-intstream-string-vice-versa/
+		IntStream messageStream = message.chars();
+		Stream<String> binaryStream = messageStream.mapToObj(o -> codes.get((char) o));
+		
+		bits = binaryStream.collect(Collectors.joining());
+	}
 	
 	// A character in the frequency tree.
 	private class WeightedCharacter implements Comparable<WeightedCharacter> {

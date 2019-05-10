@@ -3,6 +3,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.sql.Date;
+import java.util.concurrent.TimeUnit;
 
 import sun.java2d.pipe.BufferedBufImgOps;
 
@@ -12,27 +14,37 @@ public class Main {
 		testCodingTree();
 		
 		
-		
-		testCompression();
+		File input = new File("WarAndPeace.txt");
+		testCompression(input);
 
 	}
 	
 	public static void testCodingTree() {
+		
 		System.out.println(">    Basic Message");
 		CodingTree testEncode = new CodingTree("message");
 		
 		System.out.println(">------------------------------------<");
 		
 		System.out.println(">    Advanced Message");
-		CodingTree testEncode2 = new CodingTree("TEsnseisni asereui weiiidfn 123 #£ sddfjkseo1"
-				+ "fsdlfkdf$€) {[]} asdfghjklpoiuytrewqzxcvbnm asdfghjklpoiuytrewqzxcvbnm QWERTYUIOPÅÆØLKJHGFDSAZXCVBNM,.-æø1234567890+\\¨'|<");
+		CodingTree testEncode2 = new CodingTree("TEsnseisni asereui weiiidfn 123 #ï¿½ sddfjkseo1"
+				+ "fsdlfkdf$ï¿½) {[]} asdfghjklpoiuytrewqzxcvbnm asdfghjklpoiuytrewqzxcvbnm QWERTYUIOPï¿½ï¿½ï¿½LKJHGFDSAZXCVBNM,.-ï¿½ï¿½1234567890+\\ï¿½'|<");
+		
+		System.out.println(">------------------------------------<");
+		
+		System.out.println(">    Empty Message");
+		CodingTree testEncode3 = new CodingTree("");
+		
+		System.out.println(">------------------------------------<");
 	}
 	
-	public static void testCompression() throws IOException {
-		System.out.println(">------------------------------------<");
-		System.out.println(">    War and Peace");
+	public static void testCompression(File input) throws IOException {
 		
-		File input = new File("WarAndPeace.txt");
+		
+		System.out.println(">------------------------------------<");
+		System.out.println(">    " + input.getName());
+		
+		// Read file
 		FileReader fileReader = new FileReader(input);
 		BufferedReader buffer = new BufferedReader(fileReader);
 		StringBuilder parsedString = new StringBuilder();
@@ -40,11 +52,16 @@ public class Main {
 		while((i=buffer.read()) != -1) {
 			parsedString.append(((char) i));
 		}
-
-		CodingTree testEncode = new CodingTree(parsedString.toString());
 		buffer.close();
+		// Compress
+		long startTime = System.currentTimeMillis();
+		CodingTree testEncode = new CodingTree(parsedString.toString());
+		long runtime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
 		
-		
+
+		System.out.println(">    Original Size: \t" + input.length());
+		// https://stackoverflow.com/questions/625433/how-to-convert-milliseconds-to-x-mins-x-seconds-in-java
+		System.out.println("Run Time : " + runtime);
 	}
 
 }
