@@ -19,7 +19,7 @@ public class MyHashTable<K, V> {
 		
 		
 		
-		values.set(hash(searchKey), V)
+		values.set(hash(searchKey), newValue);
 	}
 	
 	public V get(K searchKey) {
@@ -28,7 +28,7 @@ public class MyHashTable<K, V> {
 	
 	private int hash(K key) {
 		int index;
-		while(values.get(index = System.identityHashCode(key) % capacity) == null) {
+		while(values.get(index = System.identityHashCode(key) % capacity) != null) {
 			
 		}
 		// TODO:  takes a key and returns an int in the range [0...capacity]
