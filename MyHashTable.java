@@ -26,9 +26,17 @@ public class MyHashTable<K, V> {
 		if (map[index]!=null)  {
 			int checkRound = 0;
 			int initialIndex = index;
-			// Quadratic checking.
+			
 			while(map[index] != null) {
-				index += (Math.pow(2, checkRound) % capacity);
+				
+				
+				// Linear probing
+				index = (index+1) % capacity;
+				// Quadratic probing
+				//index += (Math.pow(2, checkRound) % capacity);
+				if(index == initialIndex) {
+					break;
+				}
 			}
 		}
 		// At this point, the index is pointing to a null space in the array.
@@ -46,6 +54,31 @@ public class MyHashTable<K, V> {
 		
 		int index = System.identityHashCode(key) % capacity;
 		return index;
+	}
+	
+	private void stats() {
+		//Gather Stats
+		int entries = 0;
+		int buckets = this.map.length;
+		int[] probes = new int[this.map.length];
+		for(int i = 0; i < this.map.length; i++) {
+			if(!map[i].equals(null)) {
+				entries++;
+			}
+			int hash = map[i].hashCode();
+			if(i > hash) probes[i-hash]++;
+			else probes[hash - i + this.map.length]++;
+			
+		}
+		
+		// For each distinct value, calculate the difference between the expected hash and the final hash.
+		
+		
+		StringBuilder sb = new StringBuilder("Hash Table Stats");
+		sb.append("\n================\n");
+		
+		sb.append("Number of Entries: " + entries);
+		
 	}
 	
 	@Override

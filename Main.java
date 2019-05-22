@@ -28,6 +28,17 @@ public class Main {
 		test1.put("Key1", "Val1");
 		System.out.println(test1.toString());
 		System.out.println();
+		
+		// Put values in table with same hash value but over capacity 
+		System.out.println(">---" + "# Puts > Initial Capacity" + "---<");
+		MyHashTable<String, String> test2 = new MyHashTable<String, String>(4);
+		test2.put("Key0", "Val0");
+		test2.put("Key1", "Val1");
+		test2.put("Key2", "Val2");
+		test2.put("Key3", "Val3");
+		test2.put("Key4", "Val4");
+		System.out.println(test2.toString());
+		System.out.println();
 	}
 
 }
