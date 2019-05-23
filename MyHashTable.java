@@ -61,16 +61,28 @@ public class MyHashTable<K, V> {
 		int entries = 0;
 		int buckets = this.map.length;
 		int[] probes = new int[this.map.length];
+		int maxProbes = 0;
+		double avg = 0;
+		
 		for(int i = 0; i < this.map.length; i++) {
 			if(map[i]!=null) {
 				entries++;
 				int hash = System.identityHashCode(map[i].key) % capacity;
-				if(i >= hash) probes[(i-hash)%buckets]++;
-				else probes[(hash-i+buckets)%buckets]++;
-			}
-			
-			
+				if(i >= hash) {
+					if (maxProbes < (i-hash)%buckets) maxProbes = (i-hash)%buckets;
+					probes[(i-hash)%buckets]++;
+				}
+				else {
+					if (maxProbes < (hash-i+buckets)%buckets) maxProbes = (hash-i+buckets)%buckets;
+					probes[(hash-i+buckets)%buckets]++;
+				}
+			}			
 		}
+		
+		for(int i = 0; i < probes.length; i++) {
+			avg += (i+1) * probes[i];
+		}
+		avg = avg / entries;
 		
 		// For each distinct value, calculate the difference between the expected hash and the final hash.
 		
@@ -81,6 +93,10 @@ public class MyHashTable<K, V> {
 		System.out.println("Number of Buckets: " + buckets);
 		System.out.println(Arrays.toString(probes));
 		System.out.printf("Bucket Fill %%: %d", Math.floorDiv(entries*100, buckets));
+		System.out.println();
+		System.out.printf("Max # Probes: %d", maxProbes);
+		System.out.println();
+		System.out.printf("Avg Probes: %f", avg);
 		System.out.println();
 	}
 	

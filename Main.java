@@ -1,9 +1,12 @@
+import java.util.Arrays;
 
 public class Main {
 
 	public static void main(String[] args) {
 		try {
 			testMyHashTable();
+			testCodingTree();
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -11,8 +14,12 @@ public class Main {
 
 	}
 	
+	public static void testCodingTree() {
+		CodingTree tree0 = new CodingTree("TEST Message");
+		System.out.println(Arrays.deepToString(tree0.words));
+	}
+	
 	public static void testMyHashTable() throws Exception {
-		final int capacity = 32768;
 		
 		// Put a single value into a table
 		System.out.println(">---" + "Single Value" + "---<");
@@ -56,6 +63,7 @@ public class Main {
 		
 		// Puts another value where # values > capacity
 		System.out.println(">---" + "# Puts > Initial Capacity" + "---<");
+		System.out.println("Should Throw Loop Exception");
 		try {
 			MyHashTable<String, String> test2 = new MyHashTable<String, String>(4);
 			test2.put("Key0", "Val0");
@@ -72,4 +80,6 @@ public class Main {
 		
 	}
 
+	
+	
 }
