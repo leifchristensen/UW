@@ -17,7 +17,7 @@ public class MyHashTable<K, V> {
 		map = (KVPair[]) Array.newInstance(KVPair.class, capacity);
 	}
 	
-	public void put(K searchKey, V newValue) {
+	public void put(K searchKey, V newValue) throws Exception {
 		if(searchKey == null || newValue == null) {
 			throw new NullPointerException();
 		}
@@ -35,7 +35,7 @@ public class MyHashTable<K, V> {
 				// Quadratic probing
 				//index += (Math.pow(2, checkRound) % capacity);
 				if(index == initialIndex) {
-					break;
+					throw new Exception("Loop");
 				}
 			}
 		}
@@ -56,39 +56,43 @@ public class MyHashTable<K, V> {
 		return index;
 	}
 	
-	private void stats() {
+	public void stats() {
 		//Gather Stats
 		int entries = 0;
 		int buckets = this.map.length;
 		int[] probes = new int[this.map.length];
 		for(int i = 0; i < this.map.length; i++) {
-			if(!map[i].equals(null)) {
+			if(map[i]!=null) {
 				entries++;
+				int hash = System.identityHashCode(map[i].key) % capacity;
+				if(i >= hash) probes[(i-hash)%buckets]++;
+				else probes[(hash-i+buckets)%buckets]++;
 			}
-			int hash = map[i].hashCode();
-			if(i > hash) probes[i-hash]++;
-			else probes[hash - i + this.map.length]++;
+			
 			
 		}
 		
 		// For each distinct value, calculate the difference between the expected hash and the final hash.
 		
 		
-		StringBuilder sb = new StringBuilder("Hash Table Stats");
-		sb.append("\n================\n");
-		
-		sb.append("Number of Entries: " + entries);
-		
+		System.out.println("Hash Table Stats");
+		System.out.println("================");		
+		System.out.println("Number of Entries: " + entries);
+		System.out.println("Number of Buckets: " + buckets);
+		System.out.println(Arrays.toString(probes));
+		System.out.printf("Bucket Fill %%: %d", Math.floorDiv(entries*100, buckets));
+		System.out.println();
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Map:");
-		Arrays.stream(this.map).forEach(pair -> {
+		for(int i = 0; i < this.map.length; i++) {
+			KVPair pair = this.map[i];
 			if(pair != null) {
-				sb.append("\t[" + pair + " | " + hash(pair.getKey()) + "]");
+				sb.append("\t" + i + "[" + pair + " | " + hash(pair.getKey()) + "]");
 			}
-		});
+		}
 		return sb.toString();
 	}
 	
