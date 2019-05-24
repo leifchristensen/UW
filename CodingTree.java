@@ -1,5 +1,14 @@
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.UUID;
+import java.util.PrimitiveIterator.OfInt;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -30,6 +39,8 @@ public class CodingTree {
 				frequency.put(word, (frequency.contains(word) ? frequency.get(word)+1 : 1));
 			} catch (Exception e) {
 				// Throws if in infinite loop.
+				System.out.println(word);
+				System.out.println(frequency.get(word));
 				e.printStackTrace();
 			}
 		}
@@ -62,6 +73,7 @@ public class CodingTree {
 		// next task is to encode the message as a string in binary.
 				
 		encode(fulltext);
+		writeFile();
 	}
 	
 	// maps a set of unique string codes for every node in a tree.
@@ -87,6 +99,96 @@ public class CodingTree {
 		Stream<String> binaryStream = Arrays.stream(words).map(o -> codes.get(o));		
 		bits = binaryStream.collect(Collectors.joining());
 	}
+	
+	// Creates a string file writer and a byte file writer
+		private void writeFile() {
+			
+			// Text output f codes
+			// https://stackoverflow.com/questions/6981555/how-to-output-binary-data-to-a-file-in-java
+			try {
+				// txt file output.
+				
+				FileWriter fileOut = new FileWriter("codes-" + UUID.randomUUID() + ".txt");
+				fileOut.write(this.codes.toString());
+				fileOut.close();
+				// System.out.println("--String File Written");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+				
+			try {
+				// Binary output
+				File dataFile = new File("data-" + UUID.randomUUID() + ".txt");
+				FileOutputStream fs = new FileOutputStream(dataFile, true);
+				ByteArrayOutputStream byteData = parseBytes(bits);
+				
+				// Writes the byte data to the data file.
+				fs.write(byteData.toByteArray());
+				
+				fs.close();
+				System.out.println(">    Final Size: \t" + dataFile.length());
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}		
+		}
+		
+		// parses bytes from a string of binary data. 
+		// string is read 8 characters at a time, then a bytes is created from the chunk of the string until the entire string is consumed.
+		private ByteArrayOutputStream parseBytes(String binaryString) {
+			OfInt charStream = binaryString.chars().iterator();
+			LinkedList<String> chunks = new LinkedList<String>();
+					
+			// parse the string for chunks of 8 characters.
+			while(charStream.hasNext()) {
+				// initial byte must equal zero to prevent overflow.
+				String chunk = "";
+				int leadBit = charStream.next();
+				// if leading bit is 1, byte will overflow. 
+				// Change subsequent bits to inverses and 
+				boolean isOverflow = (leadBit == '1');
+				if(isOverflow) chunk = "-";
+				chunk = chunk + parseBit(leadBit, isOverflow);
+				
+				for (int i = 1; i < Byte.SIZE; i++) {
+					
+					if(charStream.hasNext()) {
+						chunk = chunk + parseBit(charStream.next(), isOverflow);
+					}
+					// if the end of the file has been reached, append zeros.
+					else {
+						chunk = chunk + 0;
+					}
+				}
+				chunks.add(chunk);
+			}
+			
+			Stream<String> stringChunks = chunks.stream();
+			
+			// At this point, the chunks should be filled with strings each containing the most compressed version of the binary string. 
+			// each chunk represents a byte.
+			
+			// next task is to parse the list of chunks into bytes and add the bytes to the return stream.		
+			ByteArrayOutputStream byteChunks = new ByteArrayOutputStream();
+			stringChunks.map(o -> Byte.parseByte(o, 2)).forEach(byteChunks::write);;		
+			
+			
+			
+			// At this point, the stream is full of the most compressed possible bytes with the last byte appended with zeros if needed.
+			return byteChunks;
+		}
+		
+		// Ensures that all characters are binary.
+		// Gets two's compliments of a binary string if invert is true.
+		private char parseBit(int toParse, boolean invert) {
+			if (toParse != '0' && toParse != '1' ) {
+				throw new IllegalArgumentException("non-binary Character: " + toParse);
+			}
+			
+			return (char) (invert ? (toParse == '1' ? '0' : '1') : toParse);
+		}
+	
 	
 	// Nodes in the frequency tree.
 	class Node implements Comparable<Node>{
@@ -121,4 +223,6 @@ public class CodingTree {
 		}
 	}
 
+	
+	
 }

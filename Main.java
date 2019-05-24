@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 public class Main {
@@ -6,6 +9,8 @@ public class Main {
 		try {
 			//testMyHashTable();
 			testCodingTree();
+			File input = new File("WarAndPeace.txt");
+			//compress(input);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -14,8 +19,18 @@ public class Main {
 
 	}
 	
+	public static void compress(File inputFile) throws Exception {
+		try {
+			String s = new String(Files.readAllBytes(inputFile.toPath()));
+			CodingTree encode0 = new CodingTree(s);
+		} catch (IOException e) {
+			// TODO: handle exception
+			System.out.println(e.getStackTrace());
+		}
+	}
+	
 	public static void testCodingTree() {
-		CodingTree tree0 = new CodingTree("TEST Message");
+		CodingTree tree0 = new CodingTree("TEST TEST Message");
 		System.out.println("Words\t" + Arrays.deepToString(tree0.words));
 		System.out.println(tree0.frequency);
 		System.out.println(tree0.codes);
@@ -69,6 +84,7 @@ public class Main {
 		System.out.println(">---" + "Contains" + "---<");
 		System.out.println(test2.toString());
 		System.out.println("Contains Key1: " + test2.contains("Key2"));
+		System.out.println("Contains Key7: " + test2.contains("Key7"));
 		System.out.println();
 		
 		// Puts another value where # values > capacity

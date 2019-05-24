@@ -24,23 +24,23 @@ public class MyHashTable<K, V> {
 		int index = hash(searchKey);
 		
 		if (map[index]!=null)  {
-			int checkRound = 0;
 			int initialIndex = index;
-			
+			boolean loop = false;
 			// Return the index of the matching key, or if it doesn't exist, the first empty bucket where it can be placed.
 			while(map[index] != null && !map[index].getKey().equals(searchKey)) {
-				
-				
-				// Linear probing
-				index = (index+1) % capacity;
-				// Quadratic probing
-				//index += (Math.pow(2, checkRound) % capacity);
-				if(index == initialIndex) {
+				if(loop && index == initialIndex) {
 					throw new Exception("Loop");
 				}
+				// Linear probing
+				index = index+1;				
+				if(index >= map.length) {
+					loop = true;
+					index = 0;
+				}
+				
 			}
 		}
-		// At this point, the index is pointing to a null space in the array.
+		// At this point, the index is pointing to a null space in the array or at the matching index
 		map[index] = new KVPair(searchKey, newValue);
 		
 	}
@@ -51,19 +51,18 @@ public class MyHashTable<K, V> {
 	
 	public boolean contains(K searchKey) {
 		int initial = hash(searchKey);
+		int i = initial;
 		
-		
-		for(int i = initial; this.map[i] != null; i++) {
+		while(map[i] != null) {
 			if(this.map[i].getKey().equals(searchKey)) return true;
-		}
+			i = (i+1) % capacity;
+			if(i == initial) return false;
+		}		
 		return false;
 	}
 	
 	private int hash(K key) {
-		//mod 15 selects first 15 bits.
-		// in case of conflict, you can get another set of bits by dividing by 2^15 and rehashing the result.
-		
-		int index = System.identityHashCode(key) % capacity;
+		int index = Objects.hashCode(key) % capacity;
 		return index;
 	}
 	
