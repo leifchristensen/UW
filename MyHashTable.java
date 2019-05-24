@@ -27,7 +27,8 @@ public class MyHashTable<K, V> {
 			int checkRound = 0;
 			int initialIndex = index;
 			
-			while(map[index] != null) {
+			// Return the index of the matching key, or if it doesn't exist, the first empty bucket where it can be placed.
+			while(map[index] != null && !map[index].getKey().equals(searchKey)) {
 				
 				
 				// Linear probing
@@ -46,6 +47,16 @@ public class MyHashTable<K, V> {
 	
 	public V get(K searchKey) {
 		return ((KVPair) map[hash(searchKey)]).getValue();
+	}
+	
+	public boolean contains(K searchKey) {
+		int initial = hash(searchKey);
+		
+		
+		for(int i = initial; this.map[i] != null; i++) {
+			if(this.map[i].getKey().equals(searchKey)) return true;
+		}
+		return false;
 	}
 	
 	private int hash(K key) {
