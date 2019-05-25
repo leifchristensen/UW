@@ -72,7 +72,7 @@ public class MyHashTable<K, V> {
 		int entries = 0;
 		int buckets = this.map.length;
 		int[] probes = new int[this.map.length];
-		int maxProbes = 0;
+		int maxProbes = 1;
 		double avg = 0;
 		
 		for(int i = 0; i < this.map.length; i++) {
@@ -80,18 +80,18 @@ public class MyHashTable<K, V> {
 				entries++;
 				int hash = hash(map[i].key);
 				if(i >= hash) {
-					if (maxProbes < (i-hash)%buckets) maxProbes = (i-hash)%buckets;
+					if (maxProbes <= (i-hash)%buckets) maxProbes = (i-hash)%buckets;
 					probes[(i-hash)%buckets]++;
 				}
 				else {
-					if (maxProbes < (hash-i+buckets)%buckets) maxProbes = (hash-i+buckets)%buckets;
+					if (maxProbes <= (hash-i+buckets)%buckets) maxProbes = (hash-i+buckets)%buckets;
 					probes[(hash-i+buckets)%buckets]++;
 				}
 			}			
 		}
 		
 
-		int[] probesReduced = Arrays.copyOfRange(probes, 0, maxProbes);
+		int[] probesReduced = Arrays.copyOfRange(probes, 0, maxProbes+1);
 		
 		for(int i = 0; i < probesReduced.length; i++) {
 			avg += (i+1) * probesReduced[i];
@@ -120,7 +120,8 @@ public class MyHashTable<K, V> {
 		for(int i = 0; i < this.map.length; i++) {
 			KVPair pair = this.map[i];
 			if(pair != null) {
-				sb.append("\t Index:" + i + "-[" + pair + "|hash:" + hash(pair.getKey()) + "]");
+				sb.append("(" + pair + ")");
+				//sb.append("\t Index:" + i + "-[" + pair + "|hash:" + hash(pair.getKey()) + "]");
 			}
 		}
 		return sb.toString();

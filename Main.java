@@ -7,8 +7,10 @@ public class Main {
 
 	public static void main(String[] args) {
 		try {
-			//testMyHashTable();
-			//testCodingTree();
+			testMyHashTable();
+			testCodingTree();
+			System.out.println();
+			System.out.println();
 			File input = new File("WarAndPeace.txt");
 			compress(input);
 			
@@ -21,18 +23,18 @@ public class Main {
 	
 	public static void compress(File inputFile) throws Exception {
 		try {
-			
+			long start = System.currentTimeMillis();
 			byte[] bytes = Files.readAllBytes(inputFile.toPath());
-			System.out.printf("%,dkb", bytes.length/1024);
 			String s = new String(bytes);
 			CodingTree encode0 = new CodingTree(s);
 			
 			//System.out.println("Words\t" + Arrays.deepToString(encode0.words));
-			System.out.println("Freq  " + encode0.frequency);
+			//System.out.println("Freq  " + encode0.frequency);
 			//System.out.println("Codes " + encode0.codes);
 			//System.out.println(encode0.bits);
-			//encode0.codes.stats();
-			
+			encode0.codes.stats();
+			System.out.printf("Time: %,dms", System.currentTimeMillis() - start);
+			System.out.println();
 		} catch (IOException e) {
 			// TODO: handle exception
 			System.out.println(e.getStackTrace());
@@ -40,12 +42,11 @@ public class Main {
 	}
 	
 	public static void testCodingTree() {
-		CodingTree tree0 = new CodingTree("TEST TEST  Message.");
+		CodingTree tree0 = new CodingTree("TEST TEST TEST-TE'ST  Message...");
 		System.out.println("Words\t" + Arrays.deepToString(tree0.words));
 		System.out.println("Freq  " + tree0.frequency);
 		System.out.println("Codes " + tree0.codes);
 		System.out.println(tree0.bits);
-		tree0.codes.stats();
 	}
 	
 	public static void testMyHashTable() throws Exception {
@@ -55,7 +56,6 @@ public class Main {
 		MyHashTable<String, String> test0 = new MyHashTable<String, String>(4);
 		test0.put("Key0", "Val0");
 		System.out.println(test0.toString());
-		test0.stats();
 		System.out.println();
 		
 		// Test Get and hash
@@ -69,7 +69,6 @@ public class Main {
 		test1.put("Key0", "Val0");
 		test1.put("Key1", "Val1");
 		System.out.println(test1.toString());
-		test1.stats();
 		System.out.println();
 		
 		
@@ -82,7 +81,6 @@ public class Main {
 		test2.put("Key2", "Val2");
 		test2.put("Key3", "Val3");
 		System.out.println(test2.toString());
-		test2.stats();
 		System.out.println();
 		
 		// Puts a new value on an existing key
@@ -109,7 +107,6 @@ public class Main {
 			test3.put("Key3", "Val3");
 			test3.put("Key4", "Val4");
 			System.out.println(test3.toString());
-			test3.stats();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
