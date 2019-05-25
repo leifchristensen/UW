@@ -109,7 +109,7 @@ public class CodingTree {
 				// txt file output.
 				
 				FileWriter fileOut = new FileWriter("codes-" + UUID.randomUUID() + ".txt");
-				fileOut.write(this.codes.toString());
+				fileOut.write(this.bits.toString());
 				fileOut.close();
 				// System.out.println("--String File Written");
 			} catch (IOException e1) {
@@ -121,12 +121,11 @@ public class CodingTree {
 				File dataFile = new File("data-" + UUID.randomUUID() + ".txt");
 				FileOutputStream fs = new FileOutputStream(dataFile, true);
 				ByteArrayOutputStream byteData = parseBytes(bits);
-				
-				// Writes the byte data to the data file.
 				fs.write(byteData.toByteArray());
 				
 				fs.close();
-				System.out.println(">    Final Size: \t" + dataFile.length());
+				System.out.printf("> Final Size: %,dkb", dataFile.length()/1024);
+				System.out.println();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

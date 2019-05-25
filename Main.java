@@ -8,9 +8,9 @@ public class Main {
 	public static void main(String[] args) {
 		try {
 			//testMyHashTable();
-			testCodingTree();
+			//testCodingTree();
 			File input = new File("WarAndPeace.txt");
-			//compress(input);
+			compress(input);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -21,8 +21,18 @@ public class Main {
 	
 	public static void compress(File inputFile) throws Exception {
 		try {
-			String s = new String(Files.readAllBytes(inputFile.toPath()));
+			
+			byte[] bytes = Files.readAllBytes(inputFile.toPath());
+			System.out.printf("%,dkb", bytes.length/1024);
+			String s = new String(bytes);
 			CodingTree encode0 = new CodingTree(s);
+			
+			//System.out.println("Words\t" + Arrays.deepToString(encode0.words));
+			System.out.println("Freq  " + encode0.frequency);
+			//System.out.println("Codes " + encode0.codes);
+			//System.out.println(encode0.bits);
+			//encode0.codes.stats();
+			
 		} catch (IOException e) {
 			// TODO: handle exception
 			System.out.println(e.getStackTrace());
@@ -30,11 +40,12 @@ public class Main {
 	}
 	
 	public static void testCodingTree() {
-		CodingTree tree0 = new CodingTree("TEST TEST Message");
+		CodingTree tree0 = new CodingTree("TEST TEST  Message.");
 		System.out.println("Words\t" + Arrays.deepToString(tree0.words));
-		System.out.println(tree0.frequency);
-		System.out.println(tree0.codes);
+		System.out.println("Freq  " + tree0.frequency);
+		System.out.println("Codes " + tree0.codes);
 		System.out.println(tree0.bits);
+		tree0.codes.stats();
 	}
 	
 	public static void testMyHashTable() throws Exception {
