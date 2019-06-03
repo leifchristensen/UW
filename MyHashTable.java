@@ -6,6 +6,7 @@ import java.util.Objects;
 public class MyHashTable<K, V> {
 
 	int capacity = 32768;
+	int hashmask = capacity-1;
 	//ArrayList<KVPair> map;
 	KVPair[] map;
 	
@@ -62,7 +63,7 @@ public class MyHashTable<K, V> {
 	}
 	
 	private int hash(K key) {
-		int index = Objects.hashCode(key) % capacity;
+		int index = Objects.hashCode(key) & hashmask % capacity ;
 		return index;
 	}
 	
@@ -71,26 +72,29 @@ public class MyHashTable<K, V> {
 		int entries = 0;
 		int buckets = this.map.length;
 		int[] probes = new int[this.map.length];
-		int maxProbes = 0;
+		int maxProbes = 1;
 		double avg = 0;
 		
 		for(int i = 0; i < this.map.length; i++) {
 			if(map[i]!=null) {
 				entries++;
-				int hash = System.identityHashCode(map[i].key) % capacity;
+				int hash = hash(map[i].key);
 				if(i >= hash) {
-					if (maxProbes < (i-hash)%buckets) maxProbes = (i-hash)%buckets;
+					if (maxProbes <= (i-hash)%buckets) maxProbes = (i-hash)%buckets;
 					probes[(i-hash)%buckets]++;
 				}
 				else {
-					if (maxProbes < (hash-i+buckets)%buckets) maxProbes = (hash-i+buckets)%buckets;
+					if (maxProbes <= (hash-i+buckets)%buckets) maxProbes = (hash-i+buckets)%buckets;
 					probes[(hash-i+buckets)%buckets]++;
 				}
 			}			
 		}
 		
-		for(int i = 0; i < probes.length; i++) {
-			avg += (i+1) * probes[i];
+
+		int[] probesReduced = Arrays.copyOfRange(probes, 0, maxProbes+1);
+		
+		for(int i = 0; i < probesReduced.length; i++) {
+			avg += (i+1) * probesReduced[i];
 		}
 		avg = avg / entries;
 		
@@ -101,7 +105,7 @@ public class MyHashTable<K, V> {
 		System.out.println("================");		
 		System.out.println("Number of Entries: " + entries);
 		System.out.println("Number of Buckets: " + buckets);
-		System.out.println(Arrays.toString(probes));
+		System.out.println(Arrays.toString(probesReduced));
 		System.out.printf("Bucket Fill %%: %d", Math.floorDiv(entries*100, buckets));
 		System.out.println();
 		System.out.printf("Max # Probes: %d", maxProbes);
@@ -116,7 +120,8 @@ public class MyHashTable<K, V> {
 		for(int i = 0; i < this.map.length; i++) {
 			KVPair pair = this.map[i];
 			if(pair != null) {
-				sb.append("\t" + i + "[" + pair + " | " + hash(pair.getKey()) + "]");
+				sb.append("(" + pair + ")");
+				//sb.append("\t Index:" + i + "-[" + pair + "|hash:" + hash(pair.getKey()) + "]");
 			}
 		}
 		return sb.toString();
