@@ -2,8 +2,12 @@
 public class Main {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		testMaze();
+	}
 
+	private static void testMaze() {
+		Maze maze1 = new Maze(5, 5, false);
+		
 	}
 
 }

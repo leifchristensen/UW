@@ -1,7 +1,9 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Stack;
 
@@ -17,7 +19,7 @@ public class Maze {
 		wallsDown = new LinkedList<Maze.Wall>();
 		
 		// Creates array of nodes
-		for(int i = 0; i > this.mazeArray.length; i++) {
+		for(int i = 0; i < this.mazeArray.length; i++) {
 			for(int j = 0; j < this.mazeArray[0].length; j++) {
 				this.mazeArray[i][j] = new Node(i, j, Status.UNVISITED);
 			}
@@ -29,16 +31,16 @@ public class Maze {
 			for(int j = 0; j < this.mazeArray[0].length; j++) {	
 				if(i>0) {
 					this.mazeArray[i][j].west = new Wall(this.mazeArray[i][j],this.mazeArray[i-1][j]);
-				}
+				} else this.mazeArray[i][j].west = new Wall(this.mazeArray[i][j],null);
 				if(j>0) {
 					this.mazeArray[i][j].north = new Wall(this.mazeArray[i][j],this.mazeArray[i][j-1]);
-				}
-				if(i<width) {
+				} else this.mazeArray[i][j].north = new Wall(this.mazeArray[i][j],null);
+				if(i<width-1) {
 					this.mazeArray[i][j].east = new Wall(this.mazeArray[i][j],this.mazeArray[i+1][j]);
-				}
-				if(j<depth) {
+				} else this.mazeArray[i][j].east = new Wall(this.mazeArray[i][j],null);
+				if(j<depth-1) {
 					this.mazeArray[i][j].south = new Wall(this.mazeArray[i][j],this.mazeArray[i][j+1]);
-				}
+				} else this.mazeArray[i][j].south = new Wall(this.mazeArray[i][j],null);
 			}
 		}
 		
@@ -52,7 +54,8 @@ public class Maze {
 		while(numCellsTravelled < depth * width) {
 			root.status = Status.VISITED;
 			// If more than one non-visited adjacent node...
-			if(getNeighbors(root, width, depth).size() != 0) {
+			List<Wall> neighbors = getNeighbors(root, width, depth);
+			if(neighbors != null && neighbors.size() != 0) {
 				Wall next = chooseRandomUnvisitedNeighbor(root, width, depth);
 				this.path.add(root);
 				next.isUp = false;
@@ -64,19 +67,22 @@ public class Maze {
 			numCellsTravelled++;
 		}
 		
+		// Prints the maze
+		printMaze();
+		System.out.println(Arrays.deepToString(wallsDown.toArray()));
 	}
 	
 	// Returns a list of existing unvisited neighbors.
 	// https://stackoverflow.com/questions/4819635/how-to-remove-all-null-elements-from-a-arraylist-or-string-array
 	private List<Wall> getNeighbors(Node currentNode, int width, int height) {
-		Wall[] neighbors = new Wall[3]; 
-		if(currentNode.width > 0 && currentNode.west.second.status != Status.VISITED) neighbors[0] = currentNode.west;
-		if(currentNode.width < width && currentNode.east.second.status != Status.VISITED) neighbors[1] = currentNode.east;
-		if(currentNode.height > 0 && currentNode.north.second.status != Status.VISITED) neighbors[2] = currentNode.north;
-		if(currentNode.height < height && currentNode.south.second.status != Status.VISITED) neighbors[3] = currentNode.south;
+		Wall[] neighbors = new Wall[4]; 
+		if(currentNode.width > 0 && !(currentNode.west.second == null) && currentNode.west.second.status != Status.VISITED) neighbors[0] = currentNode.west;
+		if(currentNode.width < width && !(currentNode.east.second == null)  && currentNode.east.second.status != Status.VISITED) neighbors[1] = currentNode.east;
+		if(currentNode.height > 0 && !(currentNode.north.second == null) && currentNode.north.second.status != Status.VISITED) neighbors[2] = currentNode.north;
+		if(currentNode.height < height && !(currentNode.south.second == null) && currentNode.south.second.status != Status.VISITED) neighbors[3] = currentNode.south;
 
-		List<Wall> nonNull = Arrays.asList(neighbors);
-		nonNull.removeAll(Collections.singleton(null));
+		List<Wall> nonNull = new ArrayList<Maze.Wall>(Arrays.asList(neighbors));
+		nonNull.removeIf(Objects::isNull);
 		if(nonNull.size() == 0) return null;
 		return nonNull;
 	}
@@ -97,6 +103,12 @@ public class Maze {
 	}
 
 
+	private void printMaze() {
+		for(Node[] a : this.mazeArray) {
+			System.out.println(Arrays.deepToString(a));
+		}
+		
+	}
 
 
 	class Node {
@@ -114,19 +126,20 @@ public class Maze {
 		}	
 		
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder(width + "." + height + "|");
 			if(this.north != null && !this.north.isUp) {
-				sb.append("N");
+				sb.append("^");
 			} else sb.append("_");
 			if(this.east != null && !this.east.isUp)  {
-				sb.append("E");
+				sb.append(">");
 			} else sb.append("_");
 			if(this.south != null && !this.south.isUp)  {
-				sb.append("S");
+				sb.append("v");
 			} else sb.append("_");
 			if(this.west != null && !this.west.isUp)  {
-				sb.append("W");
+				sb.append("<");
 			} else sb.append("_");
+			sb.append("| ");
 			return sb.toString();
 		}
 	}
@@ -141,6 +154,9 @@ public class Maze {
 			isUp = true;
 		}
 
+		public String toString() {
+			return "::" + first + "-" + second + "::" + "\r\n";
+		}
 		
 		// equal if the ends of a wall are the same, false otherwise.
 		public boolean equals(Wall o) {
