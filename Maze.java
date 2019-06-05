@@ -7,15 +7,19 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Stack;
 
+import javax.swing.event.ListSelectionEvent;
+
 public class Maze {
 	
 	private Node[][] mazeArray;
 	private Stack<Node> path;
 	LinkedList<Wall> wallsDown;
+	private LinkedList<Node> pathToEnd;
 
 	public Maze(int width, int depth, boolean debug) {
 		mazeArray = new Node[depth][width];
 		this.path = new Stack<Node>();
+		this.pathToEnd = new LinkedList<Maze.Node>();
 		wallsDown = new LinkedList<Maze.Wall>();
 		
 		// Creates array of nodes
@@ -50,18 +54,20 @@ public class Maze {
 		int numCellsTravelled = 0;
 		Node root = this.mazeArray[0][0];
 		this.path.add(root);
-		// since array size is depth x width, the recursion must travel to all depth x width cells.
-		// numCellsTravelled <= depth * width
 		while(!this.path.isEmpty()) {
 			root.status = Status.VISITED;
+			if(root.width == width-1 && root.height == depth-1) {
+				((Stack<Node>) this.path.clone()).forEach(this.pathToEnd::add);
+			}
 			// If more than one non-visited adjacent node...
 			List<Wall> neighbors = getNeighbors(root, width, depth);
 			if(neighbors != null && neighbors.size() != 0) {
 				Wall next = chooseRandomUnvisitedNeighbor(root, width, depth);
-				this.path.add(root);
+				
 				next.isUp = false;
 				this.wallsDown.add(next);
 				root = next.second;
+				this.path.add(root);
 			} else if(!this.path.empty()) {
 				root = this.path.pop();
 			}			
@@ -134,6 +140,7 @@ public class Maze {
 		
 		public String toString() {
 			StringBuilder sb = new StringBuilder("|");
+			
 			if(this.north != null && !this.north.isUp) {
 				sb.append("^");
 			} else sb.append("_");
@@ -146,7 +153,13 @@ public class Maze {
 			if(this.west != null && !this.west.isUp)  {
 				sb.append("<");
 			} else sb.append("_");
-			sb.append("| ");
+			sb.append("|");
+			
+			if(pathToEnd.contains(this)) {
+				sb.append("*");
+			} else sb.append(" ");
+			
+
 			return sb.toString();
 		}
 	}
