@@ -1,16 +1,14 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+/*
+ * Leif Christensen
+ * Assignment 5
+ */
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Stack;
-
-import javax.swing.event.ListSelectionEvent;
 
 public class Maze {
 	
@@ -90,12 +88,19 @@ public class Maze {
 					// If more than one non-visited adjacent node...
 					List<Wall> neighbors = getNeighbors(root, width, depth);
 					if(neighbors != null && neighbors.size() != 0) {
+						// Adds the node to the path. If dead-end, path is popped until a node with a neighbor is returned.
+						// This ensures that the path always contains the shortest path to the end.
 						this.path.add(root);
+						
+						// Gets a wall from the current node to an unvisited neighbor.
 						Wall nextWall = chooseRandomUnvisitedNeighbor(root, width, depth);
-						nextWall.isUp = false;
+						
+						// Sets the wall to down and updates the wall map.
+						nextWall.isUp = false;						
 						Node[] nodesOfWall = mapWallToNodes.get(nextWall);
-						// Updates wall map to use down wall
 						mapWallToNodes.put(nextWall, nodesOfWall);
+						
+						// Set the next node to the other side of the wall.
 						// If the first node of the wall is the current root, update the root to the wall's second node
 						if(nextWall.first.equals(root)) {
 							root = nextWall.second;
@@ -125,8 +130,10 @@ public class Maze {
 				Node searchNode = mazeArray[i][j];
 				Node searchNodeNorth = mazeArray[i][j-1];
 				
+				// Searches the map of nodes to walls for a wall from the current node to the north node.
 				HashSet<Wall> searchWalls = this.mapNodeToWalls.get(searchNode);
 				Wall resultWall = searchWalls.stream().filter(w -> w.containsNode(searchNodeNorth)).findFirst().orElse(null);
+				
 				if(resultWall.isUp) {
 					sb.append("X ");
 				} else sb.append("  ");
@@ -140,8 +147,10 @@ public class Maze {
 				//West
 				Node searchNode = mazeArray[i][j];
 				Node searchNodeWest = mazeArray[i-1][j];
+				
 				HashSet<Wall> searchWalls = this.mapNodeToWalls.get(searchNode);
 				Wall resultWall = searchWalls.stream().filter(w -> w.containsNode(searchNodeWest)).findFirst().orElse(null);
+				
 				if(resultWall.isUp) {
 					sb.append("X ");
 				} else sb.append("  ");
@@ -168,7 +177,6 @@ public class Maze {
 	
 	
 	// Returns a list of existing unvisited neighbors.
-	// https://stackoverflow.com/questions/4819635/how-to-remove-all-null-elements-from-a-arraylist-or-string-array
 	private List<Wall> getNeighbors(Node currentNode, int width, int height) {
 		//Wall[] neighbors = new Wall[4]; 
 		List<Wall> returnList = new LinkedList<Maze.Wall>();
@@ -183,17 +191,11 @@ public class Maze {
 	
 	
 	// Chooses one of the unvisited neighbors, if one exists.
-	// Returns null if no unvisited neighbors exist.
 	private Wall chooseRandomUnvisitedNeighbor(Node currentNode, int width, int height) {
-		
 		List<Wall> nonNull = new LinkedList<Maze.Wall>();		
 		nonNull.addAll(getNeighbors(currentNode, width, height));
-		
 		Random rand = new Random();
-		
-		return nonNull.get(rand.nextInt(nonNull.size()));
-		
-		
+		return nonNull.get(rand.nextInt(nonNull.size()));		
 	}
 
 	
@@ -239,6 +241,7 @@ public class Maze {
 			return false;
 		}
 
+		// given an end node, returns the other end node.
 		public Node otherNode(Node searchNode) {
 			if (searchNode == null) return null;
 			if (searchNode == this.first) return second;
