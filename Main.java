@@ -6,7 +6,7 @@ public class Main {
 	}
 
 	private static void testMaze() {
-		Maze maze1 = new Maze(5, 5, false);
+		Maze maze1 = new Maze(5, 5, true);
 		
 	}
 
