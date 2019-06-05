@@ -14,7 +14,7 @@ public class Maze {
 	LinkedList<Wall> wallsDown;
 
 	public Maze(int width, int depth, boolean debug) {
-		mazeArray = new Node[width][depth];
+		mazeArray = new Node[depth][width];
 		this.path = new Stack<Node>();
 		wallsDown = new LinkedList<Maze.Wall>();
 		
@@ -49,9 +49,10 @@ public class Maze {
 		
 		int numCellsTravelled = 0;
 		Node root = this.mazeArray[0][0];
-		
+		this.path.add(root);
 		// since array size is depth x width, the recursion must travel to all depth x width cells.
-		while(numCellsTravelled < depth * width) {
+		// numCellsTravelled <= depth * width
+		while(!this.path.isEmpty()) {
 			root.status = Status.VISITED;
 			// If more than one non-visited adjacent node...
 			List<Wall> neighbors = getNeighbors(root, width, depth);
@@ -65,6 +66,7 @@ public class Maze {
 				root = this.path.pop();
 			}			
 			numCellsTravelled++;
+			printMaze();
 		}
 		
 		// Prints the maze
@@ -104,9 +106,14 @@ public class Maze {
 
 
 	private void printMaze() {
-		for(Node[] a : this.mazeArray) {
-			System.out.println(Arrays.deepToString(a));
+		for(int j = 0; j < this.mazeArray[0].length; j++) {
+		for(int i = 0; i < this.mazeArray.length; i++) {
+				
+			System.out.print(this.mazeArray[i][j]);
+			}
+			System.out.println();
 		}
+		System.out.println();
 		
 	}
 
@@ -126,7 +133,7 @@ public class Maze {
 		}	
 		
 		public String toString() {
-			StringBuilder sb = new StringBuilder(width + "." + height + "|");
+			StringBuilder sb = new StringBuilder("|");
 			if(this.north != null && !this.north.isUp) {
 				sb.append("^");
 			} else sb.append("_");
