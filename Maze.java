@@ -14,6 +14,10 @@ import javax.swing.event.ListSelectionEvent;
 
 public class Maze {
 	
+	private int width;
+	private int depth;
+	private boolean debug;
+	
 	private Node[][] mazeArray;
 	private HashSet<Wall> wallSet;
 	private HashMap<Node, HashSet<Wall>> mapNodeToWalls;
@@ -22,6 +26,10 @@ public class Maze {
 	private LinkedList<Node> pathToEnd;
 
 	public Maze(int width, int depth, boolean debug) {
+		this.width = width;
+		this.depth = depth;
+		this.debug = debug;
+		
 		mazeArray = new Node[width+2][depth+2];
 		wallSet = new HashSet<Maze.Wall>();
 		this.mapNodeToWalls = new HashMap<Maze.Node, HashSet<Wall>>();
@@ -40,20 +48,16 @@ public class Maze {
 		}
 		
 		// Creates set of unique walls
-		for(int i = 1; i < this.mazeArray.length-1; i++) {	
-			for(int j = 1; j < this.mazeArray[0].length-1; j++) {	
+		for(int i = 0; i < this.mazeArray.length-1; i++) {	
+			for(int j = 0; j < this.mazeArray[0].length-1; j++) {	
 					this.wallSet.add(new Wall(this.mazeArray[i][j], this.mazeArray[i + 1][j]));
 				
-					this.wallSet.add(new Wall(this.mazeArray[i][j], this.mazeArray[i-1][j]));
-				
 					this.wallSet.add(new Wall(this.mazeArray[i][j], this.mazeArray[i][j+1]));
-				
-					this.wallSet.add(new Wall(this.mazeArray[i][j], this.mazeArray[i][j-1]));
 					
 			}
 		}
 		
-		// Maps walls to Nodes
+		// Maps Nodes to Walls
 		for(int i = 0; i < this.mazeArray.length; i++) {	
 			for(int j = 0; j < this.mazeArray[0].length; j++) {	
 				Node searchNode = this.mazeArray[i][j];
@@ -63,49 +67,52 @@ public class Maze {
 			}
 		}
 		
-		// Map Nodes to Walls
+		// Map Walls to Nodes
 		for(Wall w : wallSet) {
 			Node[] nodesFromWall = new Node[] {w.first, w.second};
 			mapWallToNodes.put(w, nodesFromWall);
 		}
 		
-		// Sets upper left corner to start
-		Node root = this.mazeArray[1][1];
-		this.path.add(root);
-		
-		while(!this.path.isEmpty()) {
-			root.status = Status.VISITED;
-			if(root.width == width && root.height == depth) {
-				((Stack<Node>) this.path.clone()).forEach(this.pathToEnd::add);
-			}
-			// If more than one non-visited adjacent node...
-			List<Wall> neighbors = getNeighbors(root, width, depth);
-			if(neighbors != null && neighbors.size() != 0) {
-				this.path.add(root);
-				Wall nextWall = chooseRandomUnvisitedNeighbor(root, width, depth);
-				nextWall.isUp = false;
-				Node[] nodesOfWall = mapWallToNodes.get(nextWall);
-				// Updates wall map to use down wall
-				mapWallToNodes.put(nextWall, nodesOfWall);
-				
-				//this.wallsDown.add(next);
-				// If the first node of the wall is the current root, update the root to the wall's second node
-				if(nextWall.first.equals(root)) {
-					root = nextWall.second;
-				} else {
-					root = nextWall.first;
-				}
-				
-				
-			} else if(!this.path.empty()) {
-				root = this.path.pop();
-			}			
-			
-			if(debug) display();
-		}
+		runPath();
 		
 		// Prints the maze
 		display();
+	}
+	
+	private void runPath() {
+		// Sets upper left corner to start
+				Node root = this.mazeArray[1][1];
+				this.path.add(root);
+				
+				while(!this.path.isEmpty()) {
+					root.status = Status.VISITED;
+					
+					// If more than one non-visited adjacent node...
+					List<Wall> neighbors = getNeighbors(root, width, depth);
+					if(neighbors != null && neighbors.size() != 0) {
+						this.path.add(root);
+						Wall nextWall = chooseRandomUnvisitedNeighbor(root, width, depth);
+						nextWall.isUp = false;
+						Node[] nodesOfWall = mapWallToNodes.get(nextWall);
+						// Updates wall map to use down wall
+						mapWallToNodes.put(nextWall, nodesOfWall);
+						// If the first node of the wall is the current root, update the root to the wall's second node
+						if(nextWall.first.equals(root)) {
+							root = nextWall.second;
+						} else {
+							root = nextWall.first;
+						}
+						
+						
+					} else if(!this.path.empty()) {
+						root = this.path.pop();
+					}			
+					if(root.width == width && root.height == depth) {
+						((Stack<Node>) this.path.clone()).forEach(this.pathToEnd::add);
+						pathToEnd.add(root);
+					}
+					if(debug) display();
+				}
 	}
 	
 	public void display() {
@@ -113,41 +120,48 @@ public class Maze {
 		for(int j = 1; j < this.mazeArray[0].length-1; j++) {
 			//Top Row
 			for(int i = 1; i < this.mazeArray.length-1; i++) {				
-				sb.append("X");
+				sb.append("X ");
 				//North
 				Node searchNode = mazeArray[i][j];
-				Node searchNodeNorth = mazeArray[i-1][j];
+				Node searchNodeNorth = mazeArray[i][j-1];
+				
 				HashSet<Wall> searchWalls = this.mapNodeToWalls.get(searchNode);
 				Wall resultWall = searchWalls.stream().filter(w -> w.containsNode(searchNodeNorth)).findFirst().orElse(null);
 				if(resultWall.isUp) {
-					sb.append("X");
-				} else sb.append(" ");
+					sb.append("X ");
+				} else sb.append("  ");
 							
 			} 
-			sb.append("X");
+			sb.append("X ");
 			sb.append(System.getProperty("line.separator"));
 			
-			//Mid Row Row
+			//Mid Row 
 			for(int i = 1; i < this.mazeArray.length-1; i++) {
 				//West
 				Node searchNode = mazeArray[i][j];
+				Node searchNodeWest = mazeArray[i-1][j];
 				HashSet<Wall> searchWalls = this.mapNodeToWalls.get(searchNode);
-				Wall resultWall = searchWalls.stream().filter(w -> w.containsNode(searchNode)).findFirst().orElse(null);
+				Wall resultWall = searchWalls.stream().filter(w -> w.containsNode(searchNodeWest)).findFirst().orElse(null);
 				if(resultWall.isUp) {
-					sb.append("X");
-				} else sb.append(" ");
+					sb.append("X ");
+				} else sb.append("  ");
 				//Center
 				if(this.pathToEnd.contains(searchNode)) {
-					sb.append("+");
-				} else if (searchNode.status == Status.VISITED) {
-					sb.append("V");
-				} else sb.append(" ");
+					sb.append("+ ");
+				} else if (!path.isEmpty() && searchNode.status == Status.VISITED) {
+					sb.append("v ");
+				} else sb.append("  ");
 								
 			}
 			sb.append("X");	
 			sb.append(System.getProperty("line.separator"));
 			
 		}
+		for(int i = 1; i < this.mazeArray.length-1; i++) {				
+			sb.append("X X ");
+		}
+		sb.append("X");
+		sb.append(System.getProperty("line.separator"));
 		sb.append(System.getProperty("line.separator"));
 		System.out.print(sb.toString());
 	}
@@ -160,7 +174,7 @@ public class Maze {
 		List<Wall> returnList = new LinkedList<Maze.Wall>();
 		HashSet<Wall> neighbors = mapNodeToWalls.get(currentNode);
 		neighbors.forEach(w -> {
-			if(w.first.status == Status.UNVISITED) {
+			if(w.otherNode(currentNode).status == Status.UNVISITED) {
 				returnList.add(w);
 			}
 		});
@@ -182,20 +196,6 @@ public class Maze {
 		
 	}
 
-
-	private void printMaze() {
-		for(int j = 0; j < this.mazeArray[0].length; j++) {
-		for(int i = 0; i < this.mazeArray.length; i++) {
-				
-			System.out.print(this.mazeArray[i][j]);
-			}
-			System.out.println();
-		}
-		System.out.println();
-		
-	}
-
-
 	
 	class Node {
 		int width;
@@ -209,9 +209,9 @@ public class Maze {
 		
 		public String toString() {
 			StringBuilder sb = new StringBuilder("|");
-			sb.append(this.height);
-			sb.append(".");
 			sb.append(this.width);
+			sb.append(".");
+			sb.append(this.height);
 			sb.append("|");
 			
 			if(pathToEnd.contains(this)) {
@@ -239,6 +239,13 @@ public class Maze {
 			return false;
 		}
 
+		public Node otherNode(Node searchNode) {
+			if (searchNode == null) return null;
+			if (searchNode == this.first) return second;
+			if (searchNode == this.second) return first;
+			return null;
+		}
+		
 		public String toString() {
 			return "::" + first.width + "." + first.height + "-" + second.width + "." + second.height + "::" + "\r\n";
 		}
